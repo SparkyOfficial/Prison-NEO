@@ -52,6 +52,41 @@ commands:
     usage: /<command> [subcommand]
     permission: prison.job
     aliases: [work]
+  
+  minigame:
+    description: Prison mini-games
+    usage: /<command> [game]
+    permission: prison.minigame
+    aliases: [mg, game]
+  
+  loan:
+    description: Loan system
+    usage: /<command> [action]
+    permission: prison.loan
+    aliases: [credit]
+  
+  escape:
+    description: Advanced escape system
+    usage: /<command> [action]
+    permission: prison.escape
+  
+  visitor:
+    description: Visitor system
+    usage: /<command> [action]
+    permission: prison.visitor
+    aliases: [visit]
+  
+  mail:
+    description: Mail system
+    usage: /<command> [action]
+    permission: prison.mail
+    aliases: [letter]
+  
+  prisonadmin:
+    description: Prison administration commands
+    usage: /<command> [action]
+    permission: prison.admin
+    aliases: [padmin]
 
 depend: [Citizens]
 
@@ -67,6 +102,11 @@ permissions:
       prison.gang: true
       prison.contraband: true
       prison.job: true
+      prison.minigame: true
+      prison.loan: true
+      prison.escape: true
+      prison.visitor: true
+      prison.mail: true
   
   prison.admin:
     description: Admin permissions
@@ -98,4 +138,24 @@ permissions:
   
   prison.job:
     description: Job permissions
+    default: true
+  
+  prison.minigame:
+    description: Minigame permissions
+    default: true
+  
+  prison.loan:
+    description: Loan permissions
+    default: true
+  
+  prison.escape:
+    description: Escape permissions
+    default: true
+  
+  prison.visitor:
+    description: Visitor permissions
+    default: true
+  
+  prison.mail:
+    description: Mail permissions
     default: true

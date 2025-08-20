@@ -28,6 +28,12 @@ public final class PrisonNEO extends JavaPlugin {
     private EscapeManager escapeManager;
     private EventManager eventManager;
     private ReputationManager reputationManager;
+    private MinigameManager minigameManager;
+    private LoanManager loanManager;
+    private AdvancedEscapeManager advancedEscapeManager;
+    private RiotManager riotManager;
+    private VisitorManager visitorManager;
+    private MailManager mailManager;
 
     @Override
     public void onEnable() {
@@ -79,6 +85,12 @@ public final class PrisonNEO extends JavaPlugin {
         escapeManager = new EscapeManager(this);
         eventManager = new EventManager(this);
         reputationManager = new ReputationManager(this);
+        minigameManager = new MinigameManager(this);
+        loanManager = new LoanManager(this);
+        advancedEscapeManager = new AdvancedEscapeManager(this);
+        riotManager = new RiotManager(this);
+        visitorManager = new VisitorManager(this);
+        mailManager = new MailManager(this);
     }
 
     private void registerCommands() {
@@ -90,6 +102,12 @@ public final class PrisonNEO extends JavaPlugin {
         getCommand("gang").setExecutor(new GangCommand(this));
         getCommand("contraband").setExecutor(new ContrabandCommand(this));
         getCommand("job").setExecutor(new JobCommand(this));
+        getCommand("minigame").setExecutor(new MinigameCommand(this));
+        getCommand("loan").setExecutor(new LoanCommand(this));
+        getCommand("escape").setExecutor(new EscapeCommand(this));
+        getCommand("visitor").setExecutor(new VisitorCommand(this));
+        getCommand("mail").setExecutor(new MailCommand(this));
+        getCommand("prisonadmin").setExecutor(new AdminCommand(this));
     }
 
     private void registerListeners() {
@@ -98,6 +116,11 @@ public final class PrisonNEO extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new BlockBreakListener(this), this);
         getServer().getPluginManager().registerEvents(new PlayerMoveListener(this), this);
         getServer().getPluginManager().registerEvents(new NPCClickListener(this), this);
+        getServer().getPluginManager().registerEvents(minigameManager, this);
+        getServer().getPluginManager().registerEvents(loanManager, this);
+        getServer().getPluginManager().registerEvents(advancedEscapeManager, this);
+        getServer().getPluginManager().registerEvents(visitorManager, this);
+        getServer().getPluginManager().registerEvents(mailManager, this);
     }
 
     public static PrisonNEO getInstance() {
@@ -123,4 +146,10 @@ public final class PrisonNEO extends JavaPlugin {
     public EscapeManager getEscapeManager() { return escapeManager; }
     public EventManager getEventManager() { return eventManager; }
     public ReputationManager getReputationManager() { return reputationManager; }
+    public MinigameManager getMinigameManager() { return minigameManager; }
+    public LoanManager getLoanManager() { return loanManager; }
+    public AdvancedEscapeManager getAdvancedEscapeManager() { return advancedEscapeManager; }
+    public RiotManager getRiotManager() { return riotManager; }
+    public VisitorManager getVisitorManager() { return visitorManager; }
+    public MailManager getMailManager() { return mailManager; }
 }

@@ -57,13 +57,36 @@ public class EventManager {
         executeEvent(randomEvent);
     }
     
+    public void triggerEvent(String eventType) {
+        switch (eventType.toLowerCase()) {
+            case "lockdown":
+                startLockdown();
+                break;
+            case "riot":
+                plugin.getRiotManager().startRiot();
+                break;
+            case "inspection":
+                startInspection();
+                break;
+            case "visitor":
+                startVisitorDay();
+                break;
+            case "food":
+                startFoodShortage();
+                break;
+            case "power":
+                startPowerOutage();
+                break;
+        }
+    }
+    
     private void executeEvent(PrisonEvent event) {
         switch (event) {
             case LOCKDOWN:
                 startLockdown();
                 break;
             case RIOT:
-                startRiot();
+                plugin.getRiotManager().startRiot();
                 break;
             case INSPECTION:
                 startInspection();
