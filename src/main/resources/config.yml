@@ -1,0 +1,88 @@
+# Prison NEO Configuration File
+
+# World Settings
+world:
+  name: "prison_neo"
+  auto-create: true
+  reset-on-startup: false
+  
+# Prison Settings
+prison:
+  max-players: 100
+  default-sentence: 72 # hours
+  sentence-reduction-rate: 1 # hours reduced per hour played
+  
+# Economy Settings
+economy:
+  starting-money: 0.0
+  max-money: 1000000.0
+  
+# Rank Settings
+ranks:
+  D:
+    display: "&7[D]"
+    cost: 0
+    next-cost: 1000
+  C:
+    display: "&f[C]"
+    cost: 1000
+    next-cost: 2500
+  B:
+    display: "&e[B]"
+    cost: 2500
+    next-cost: 5000
+  A:
+    display: "&a[A]"
+    cost: 5000
+    next-cost: 10000
+  S:
+    display: "&6[S]"
+    cost: 10000
+    next-cost: 15000
+  TRUSTEE:
+    display: "&9[TRUSTEE]"
+    cost: 15000
+    next-cost: -1
+
+# Mine Settings
+mines:
+  reset-interval: 600 # seconds (10 minutes)
+  A:
+    name: "Coal Mine"
+    ore: COAL_ORE
+    payout: 1.0
+    required-rank: "D"
+  B:
+    name: "Iron Mine"
+    ore: IRON_ORE
+    payout: 2.5
+    required-rank: "C"
+  C:
+    name: "Gold Mine"
+    ore: GOLD_ORE
+    payout: 5.0
+    required-rank: "B"
+  D:
+    name: "Diamond Mine"
+    ore: DIAMOND_ORE
+    payout: 10.0
+    required-rank: "A"
+
+# Cell Settings
+cells:
+  auto-assign: true
+  cost-per-day: 10.0
+  
+# Messages
+messages:
+  prefix: "&8[&cPrison NEO&8] "
+  no-permission: "&cYou don't have permission to do that!"
+  player-only: "&cOnly players can use this command!"
+  world-not-loaded: "&cPrison world is not loaded!"
+  
+# Features
+features:
+  pvp: false
+  escape-prevention: true
+  auto-cell-assignment: true
+  sentence-reduction: true
