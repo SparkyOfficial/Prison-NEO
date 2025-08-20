@@ -56,9 +56,9 @@ hs_err_pid*
 
 # Plugin specific
 plugins/
-world/
-world_nether/
-world_the_end/
+# world/
+# world_nether/
+# world_the_end/
 server.properties
 bukkit.yml
 spigot.yml

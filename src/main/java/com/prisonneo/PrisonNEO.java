@@ -3,6 +3,7 @@ package com.prisonneo;
 import com.prisonneo.commands.*;
 import com.prisonneo.listeners.*;
 import com.prisonneo.managers.*;
+import com.prisonneo.ui.UIManager;
 import com.prisonneo.world.WorldGenerator;
 import com.prisonneo.world.NPCSpawner;
 import org.bukkit.plugin.java.JavaPlugin;

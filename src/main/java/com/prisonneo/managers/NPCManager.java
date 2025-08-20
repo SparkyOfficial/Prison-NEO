@@ -7,6 +7,7 @@ import net.citizensnpcs.api.npc.NPCRegistry;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -124,18 +125,21 @@ public class NPCManager {
                         "§8Псст... у меня есть информация...", "informant");
     }
     
-    public void createGuardNPC(String name, Location location, String greeting) {
+    public void createGuard(String name, Location location, String greeting, String id) {
         NPC npc = registry.createNPC(EntityType.PLAYER, name);
         npc.spawn(location);
+        npc.data().set("id", id);
         npc.data().set("greeting", greeting);
         npc.data().set("type", "guard");
         
         // Guard equipment
         if (npc.getEntity() instanceof LivingEntity) {
             LivingEntity living = (LivingEntity) npc.getEntity();
-            living.getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
-            living.getEquipment().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
-            living.getEquipment().setItemInMainHand(new ItemStack(Material.STICK));
+            if (living.getEquipment() != null) {
+                living.getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
+                living.getEquipment().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+                living.getEquipment().setItemInMainHand(new ItemStack(Material.STICK));
+            }
         }
         
         prisonNPCs.add(npc);

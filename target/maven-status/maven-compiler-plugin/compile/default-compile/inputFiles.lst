@@ -7,6 +7,7 @@ C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\listeners\P
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\VisitorCommand.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\AchievementCommand.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\AdvancedEscapeManager.java
+C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\ui\UIManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\InformantManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\AdminCommand.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\PrisonWorldCommand.java
@@ -14,6 +15,7 @@ C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\Ra
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\PunishmentManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\MailCommand.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\listeners\PlayerMoveListener.java
+C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\utils\MessageUtils.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\GangManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\AchievementManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\WorkshopManager.java
@@ -45,6 +47,7 @@ C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\Sh
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\LawyerManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\ScheduleManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\data\PrisonGang.java
+C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\utils\ConfigUtils.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\PrisonCommand.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\PrisonNEO.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\GangCommand.java
