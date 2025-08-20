@@ -1,0 +1,66 @@
+name: PrisonNEO
+version: '1.0.0'
+main: com.prisonneo.PrisonNEO
+api-version: '1.21'
+prefix: PrisonNEO
+authors: [PrisonNEO]
+description: Modern prison server plugin for Minecraft
+website: https://github.com/prisonneo/prison-neo
+
+commands:
+  prison:
+    description: Main prison command
+    usage: /<command> [subcommand]
+    permission: prison.admin
+    aliases: [p]
+  
+  prisonworld:
+    description: Prison world management
+    usage: /<command> create|reset|tp
+    permission: prison.world
+    aliases: [pw]
+  
+  cell:
+    description: Cell management
+    usage: /<command> [subcommand]
+    permission: prison.cell
+  
+  rank:
+    description: Prison rank system
+    usage: /<command> [subcommand]
+    permission: prison.rank
+  
+  mine:
+    description: Mine management
+    usage: /<command> [subcommand]
+    permission: prison.mine
+
+permissions:
+  prison.*:
+    description: All prison permissions
+    children:
+      prison.admin: true
+      prison.world: true
+      prison.cell: true
+      prison.rank: true
+      prison.mine: true
+  
+  prison.admin:
+    description: Admin permissions
+    default: op
+  
+  prison.world:
+    description: World management permissions
+    default: op
+  
+  prison.cell:
+    description: Cell permissions
+    default: true
+  
+  prison.rank:
+    description: Rank permissions
+    default: true
+  
+  prison.mine:
+    description: Mine permissions
+    default: true
