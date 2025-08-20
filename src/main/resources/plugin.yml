@@ -34,6 +34,26 @@ commands:
     description: Mine management
     usage: /<command> [subcommand]
     permission: prison.mine
+  
+  gang:
+    description: Gang system
+    usage: /<command> [subcommand]
+    permission: prison.gang
+    aliases: [g]
+  
+  contraband:
+    description: Contraband trading
+    usage: /<command> [subcommand]
+    permission: prison.contraband
+    aliases: [cb]
+  
+  job:
+    description: Job system
+    usage: /<command> [subcommand]
+    permission: prison.job
+    aliases: [work]
+
+depend: [Citizens]
 
 permissions:
   prison.*:
@@ -44,6 +64,9 @@ permissions:
       prison.cell: true
       prison.rank: true
       prison.mine: true
+      prison.gang: true
+      prison.contraband: true
+      prison.job: true
   
   prison.admin:
     description: Admin permissions
@@ -63,4 +86,16 @@ permissions:
   
   prison.mine:
     description: Mine permissions
+    default: true
+  
+  prison.gang:
+    description: Gang permissions
+    default: true
+  
+  prison.contraband:
+    description: Contraband permissions
+    default: true
+  
+  prison.job:
+    description: Job permissions
     default: true

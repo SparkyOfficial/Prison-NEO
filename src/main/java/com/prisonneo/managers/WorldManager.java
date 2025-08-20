@@ -1,8 +1,9 @@
 package com.prisonneo.managers;
 
 import com.prisonneo.PrisonNEO;
-import com.prisonneo.world.WorldGenerator;
 import com.prisonneo.world.PrisonStructureBuilder;
+import com.prisonneo.world.WorldGenerator;
+import com.prisonneo.world.NPCSpawner;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 
@@ -49,6 +50,13 @@ public class WorldManager {
             
             // Generate prison structures
             generatePrisonStructures();
+            
+            // Schedule NPC initialization after world generation
+            Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                NPCSpawner npcSpawner = new NPCSpawner(plugin, prisonWorld);
+                npcSpawner.spawnAllNPCs();
+                plugin.getLogger().info("NPCs spawned for prison world!");
+            }, 200L); // 10 second delay
         }
     }
     
