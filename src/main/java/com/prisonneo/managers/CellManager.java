@@ -144,4 +144,16 @@ public class CellManager {
         public void setOccupied(boolean occupied) { this.occupied = occupied; }
         public void setOccupant(UUID occupant) { this.occupant = occupant; }
     }
+    
+    // Additional methods needed by other managers
+    public void releaseFromCell(Player player) {
+        for (CellData cell : cells.values()) {
+            if (cell.getOccupant() != null && cell.getOccupant().equals(player.getUniqueId())) {
+                cell.setOccupied(false);
+                cell.setOccupant(null);
+                player.sendMessage("§aВы освобождены из камеры!");
+                break;
+            }
+        }
+    }
 }

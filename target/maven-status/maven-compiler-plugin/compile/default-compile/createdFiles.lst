@@ -1,0 +1,14 @@
+com\prisonneo\managers\PlayerManager.class
+com\prisonneo\managers\EconomyManager.class
+com\prisonneo\managers\RankManager$RankData.class
+com\prisonneo\PrisonNEO.class
+com\prisonneo\managers\MineManager$2.class
+com\prisonneo\managers\CellManager.class
+com\prisonneo\managers\MineManager.class
+com\prisonneo\managers\EconomyManager$MineData.class
+com\prisonneo\commands\ContrabandCommand.class
+com\prisonneo\managers\MineManager$MineData.class
+com\prisonneo\managers\CellManager$CellData.class
+com\prisonneo\managers\RankManager.class
+com\prisonneo\managers\WorldManager.class
+com\prisonneo\managers\MineManager$1.class

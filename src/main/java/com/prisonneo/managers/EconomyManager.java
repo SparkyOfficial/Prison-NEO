@@ -1,7 +1,7 @@
 package com.prisonneo.managers;
 
 import com.prisonneo.PrisonNEO;
-import com.prisonneo.data.PrisonPlayer;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -77,11 +77,10 @@ public class EconomyManager {
         
         // Add money
         double totalEarnings = price * amount;
-        PrisonPlayer prisonPlayer = plugin.getPlayerManager().getPrisonPlayer(player);
-        prisonPlayer.addMoney(totalEarnings);
+        addMoney(player, totalEarnings);
         
         player.sendMessage(String.format("§aSold %dx %s for $%.2f! Total: $%.2f", 
-                          amount, material.name(), totalEarnings, prisonPlayer.getMoney()));
+                          amount, material.name(), totalEarnings, getMoney(player)));
         
         return true;
     }
@@ -94,11 +93,10 @@ public class EconomyManager {
         }
         
         double totalCost = price * amount;
-        PrisonPlayer prisonPlayer = plugin.getPlayerManager().getPrisonPlayer(player);
         
-        if (!prisonPlayer.removeMoney(totalCost)) {
+        if (!removeMoney(player, totalCost)) {
             player.sendMessage(String.format("§cYou need $%.2f to buy this! You have $%.2f", 
-                              totalCost, prisonPlayer.getMoney()));
+                              totalCost, getMoney(player)));
             return false;
         }
         
@@ -112,9 +110,37 @@ public class EconomyManager {
         }
         
         player.sendMessage(String.format("§aBought %dx %s for $%.2f! Remaining: $%.2f", 
-                          amount, material.name(), totalCost, prisonPlayer.getMoney()));
+                          amount, material.name(), totalCost, getMoney(player)));
         
         return true;
+    }
+    
+    // Money management methods
+    public boolean addMoney(Player player, double amount) {
+        if (amount <= 0) return false;
+        
+        double currentMoney = getMoney(player);
+        setMoney(player, currentMoney + amount);
+        return true;
+    }
+    
+    public boolean removeMoney(Player player, double amount) {
+        if (amount <= 0) return false;
+        
+        double currentMoney = getMoney(player);
+        if (currentMoney < amount) return false;
+        
+        setMoney(player, currentMoney - amount);
+        return true;
+    }
+    
+    public double getMoney(Player player) {
+        return plugin.getConfig().getDouble("players." + player.getUniqueId() + ".money", 0.0);
+    }
+    
+    public void setMoney(Player player, double amount) {
+        plugin.getConfig().set("players." + player.getUniqueId() + ".money", Math.max(0, amount));
+        plugin.saveConfig();
     }
     
     private boolean hasItems(Player player, Material material, int amount) {

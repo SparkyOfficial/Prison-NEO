@@ -251,6 +251,12 @@ public class EventManager {
     public boolean isLockdownActive() { return lockdownActive; }
     public boolean isRiotActive() { return riotActive; }
     
+    // Additional methods needed by other managers
+    public void startRandomEvents() {
+        // Start random event scheduler
+        plugin.getServer().getScheduler().runTaskTimer(plugin, this::triggerRandomEvent, 6000L, 6000L); // Every 5 minutes
+    }
+    
     private enum PrisonEvent {
         LOCKDOWN, RIOT, INSPECTION, VISITOR_DAY, FOOD_SHORTAGE, POWER_OUTAGE
     }

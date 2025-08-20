@@ -124,17 +124,19 @@ public class NPCManager {
                         "§8Псст... у меня есть информация...", "informant");
     }
     
-    private void createGuard(String name, Location location, String greeting, String id) {
+    public void createGuardNPC(String name, Location location, String greeting) {
         NPC npc = registry.createNPC(EntityType.PLAYER, name);
         npc.spawn(location);
         npc.data().set("greeting", greeting);
         npc.data().set("type", "guard");
-        npc.data().set("id", id);
         
         // Guard equipment
-        npc.getEntity().getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
-        npc.getEntity().getEquipment().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
-        npc.getEntity().getEquipment().setItemInMainHand(new ItemStack(Material.IRON_SWORD));
+        if (npc.getEntity() instanceof LivingEntity) {
+            LivingEntity living = (LivingEntity) npc.getEntity();
+            living.getEquipment().setHelmet(new ItemStack(Material.IRON_HELMET));
+            living.getEquipment().setChestplate(new ItemStack(Material.IRON_CHESTPLATE));
+            living.getEquipment().setItemInMainHand(new ItemStack(Material.STICK));
+        }
         
         prisonNPCs.add(npc);
     }

@@ -120,13 +120,13 @@ public class NPCSpawner {
         }
     }
     
-    private void spawnNPC(String name, double x, double y, double z, String type) {
+    private void spawnNPC(String name, double x, double y, double z, String type, String greeting) {
         Location location = new Location(world, x, y, z);
         
         // Schedule NPC creation for next tick to avoid world loading issues
         Bukkit.getScheduler().runTask(plugin, () -> {
             try {
-                plugin.getNPCManager().createNPC(name, location, type);
+                plugin.getNPCManager().createGuardNPC(name, location, greeting);
             } catch (Exception e) {
                 plugin.getLogger().warning("Failed to spawn NPC " + name + ": " + e.getMessage());
             }

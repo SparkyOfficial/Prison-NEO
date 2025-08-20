@@ -212,4 +212,19 @@ public class ContrabandManager implements Listener {
         public double getPrice() { return price; }
         public int getSuspicionLevel() { return suspicionLevel; }
     }
+    
+    // Additional methods needed by other managers
+    public int getSuspicionLevel(Player player) {
+        return playerSuspicion.getOrDefault(player.getUniqueId(), 0);
+    }
+    
+    public void addSuspicion(Player player, int amount) {
+        UUID uuid = player.getUniqueId();
+        int currentSuspicion = playerSuspicion.getOrDefault(uuid, 0);
+        playerSuspicion.put(uuid, currentSuspicion + amount);
+        
+        if (currentSuspicion + amount > 50) {
+            player.sendMessage("§cВы привлекли внимание охраны!");
+        }
+    }
 }

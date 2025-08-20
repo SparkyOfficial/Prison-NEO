@@ -84,7 +84,6 @@ public class WorldGenerator extends ChunkGenerator {
         // Bedrock is handled in generateNoise
     }
 
-    @Override
     public Biome getBiome(WorldInfo worldInfo, int x, int y, int z) {
         return Biome.PLAINS;
     }

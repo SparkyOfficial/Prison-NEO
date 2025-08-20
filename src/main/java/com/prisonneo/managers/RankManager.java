@@ -48,6 +48,19 @@ public class RankManager {
                prisonPlayer.getMoney() >= currentRank.getNextRankCost();
     }
     
+    public void promotePlayer(Player player) {
+        PrisonPlayer prisonPlayer = plugin.getPlayerManager().getPrisonPlayer(player);
+        String currentRank = prisonPlayer.getRank();
+        String nextRank = getNextRank(currentRank);
+        
+        if (nextRank != null) {
+            prisonPlayer.setRank(nextRank);
+            player.sendMessage("§aYou have been promoted to rank " + nextRank + "!");
+        } else {
+            player.sendMessage("§cYou are already at the highest rank!");
+        }
+    }
+    
     public boolean rankUp(Player player) {
         PrisonPlayer prisonPlayer = plugin.getPlayerManager().getPrisonPlayer(player);
         RankData currentRank = ranks.get(prisonPlayer.getRank());
@@ -111,5 +124,20 @@ public class RankManager {
         public String getDisplayName() { return displayName; }
         public int getRequiredMoney() { return requiredMoney; }
         public int getNextRankCost() { return nextRankCost; }
+    }
+    
+    // Additional methods needed by other managers
+    public int getRankLevel(Player player) {
+        PrisonPlayer prisonPlayer = plugin.getPlayerManager().getPrisonPlayer(player);
+        String rank = prisonPlayer.getRank();
+        
+        switch (rank.toUpperCase()) {
+            case "D": return 1;
+            case "C": return 2;
+            case "B": return 3;
+            case "A": return 4;
+            case "S": return 5;
+            default: return 1;
+        }
     }
 }

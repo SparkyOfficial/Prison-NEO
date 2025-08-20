@@ -14,6 +14,36 @@ commands:
     permission: prison.admin
     aliases: [p]
   
+  prisonadmin:
+    description: Admin commands for prison management
+    usage: /prisonadmin <subcommand>
+    permission: prison.admin
+    aliases: [padmin, pa]
+  
+  workshop:
+    description: Prison workshop crafting system
+    usage: /workshop [menu|level]
+    permission: prison.workshop
+    aliases: [craft, мастерская]
+  
+  library:
+    description: Prison library book system
+    usage: /library [menu|books]
+    permission: prison.library
+    aliases: [books, библиотека]
+  
+  achievement:
+    description: Player achievements system
+    usage: /achievement [menu|stats]
+    permission: prison.achievement
+    aliases: [achievements, достижения]
+  
+  schedule:
+    description: Prison daily schedule
+    usage: /schedule [info|current|compliance]
+    permission: prison.schedule
+    aliases: [расписание, time]
+  
   prisonworld:
     description: Prison world management
     usage: /<command> create|reset|tp

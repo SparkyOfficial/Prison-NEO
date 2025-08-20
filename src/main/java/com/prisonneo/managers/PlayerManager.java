@@ -103,4 +103,24 @@ public class PlayerManager {
     public Map<UUID, PrisonPlayer> getAllPlayers() {
         return players;
     }
+    
+    // Additional methods needed by other managers
+    public void addSentenceTime(Player player, int minutes) {
+        PrisonPlayer prisonPlayer = getPrisonPlayer(player);
+        prisonPlayer.setSentenceTime(prisonPlayer.getSentenceTime() + minutes);
+        player.sendMessage("§c+" + minutes + " минут к сроку заключения!");
+    }
+    
+    public void reduceSentenceTime(Player player, int minutes) {
+        PrisonPlayer prisonPlayer = getPrisonPlayer(player);
+        int currentTime = prisonPlayer.getSentenceTime();
+        prisonPlayer.setSentenceTime(Math.max(0, currentTime - minutes));
+        player.sendMessage("§a-" + minutes + " минут от срока заключения!");
+    }
+    
+    public void setSentenceTime(Player player, int minutes) {
+        PrisonPlayer prisonPlayer = getPrisonPlayer(player);
+        prisonPlayer.setSentenceTime(minutes);
+        player.sendMessage("§eСрок заключения установлен: " + minutes + " минут");
+    }
 }

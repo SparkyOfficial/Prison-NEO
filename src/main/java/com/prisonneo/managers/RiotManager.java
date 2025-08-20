@@ -71,7 +71,7 @@ public class RiotManager {
                 player.sendMessage("§7Дым от пожаров затрудняет видимость!");
                 break;
             case 1: // Panic
-                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 0));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 200, 1));
                 player.sendMessage("§6Паника охватывает вас!");
                 break;
             case 2: // Debris damage

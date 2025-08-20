@@ -61,7 +61,7 @@ public class GangManager implements Listener {
         
         int slot = 0;
         for (Gang gang : gangs.values()) {
-            ItemStack gangItem = new ItemStack(Material.BANNER);
+            ItemStack gangItem = new ItemStack(Material.WHITE_BANNER);
             ItemMeta meta = gangItem.getItemMeta();
             meta.setDisplayName(gang.getDisplayName());
             meta.setLore(Arrays.asList(
@@ -103,7 +103,7 @@ public class GangManager implements Listener {
         ItemStack clicked = event.getCurrentItem();
         if (clicked == null) return;
         
-        if (clicked.getType() == Material.BANNER) {
+        if (clicked.getType() == Material.WHITE_BANNER) {
             // Join gang
             String gangName = findGangByDisplayName(clicked.getItemMeta().getDisplayName());
             if (gangName != null) {

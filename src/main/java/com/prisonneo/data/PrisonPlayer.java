@@ -66,4 +66,12 @@ public class PrisonPlayer {
         long minutes = (playTime % (1000 * 60 * 60)) / (1000 * 60);
         return String.format("%dh %dm", hours, minutes);
     }
+    
+    // Additional methods needed by managers
+    public int getSentenceTime() { return sentence; }
+    public void setSentenceTime(int minutes) { this.sentence = minutes; }
+    public boolean isReleased() { return sentence <= 0; }
+    public void setReleased(boolean released) { 
+        if (released) this.sentence = 0; 
+    }
 }

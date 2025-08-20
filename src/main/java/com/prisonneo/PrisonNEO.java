@@ -34,6 +34,13 @@ public final class PrisonNEO extends JavaPlugin {
     private RiotManager riotManager;
     private VisitorManager visitorManager;
     private MailManager mailManager;
+    private com.prisonneo.managers.SecurityManager securityManager;
+    private PunishmentManager punishmentManager;
+    private ScheduleManager scheduleManager;
+    private AchievementManager achievementManager;
+    private WorkshopManager workshopManager;
+    private LibraryManager libraryManager;
+    private UIManager uiManager;
 
     @Override
     public void onEnable() {
@@ -91,6 +98,13 @@ public final class PrisonNEO extends JavaPlugin {
         riotManager = new RiotManager(this);
         visitorManager = new VisitorManager(this);
         mailManager = new MailManager(this);
+        securityManager = new com.prisonneo.managers.SecurityManager(this);
+        punishmentManager = new PunishmentManager(this);
+        scheduleManager = new ScheduleManager(this);
+        achievementManager = new AchievementManager(this);
+        workshopManager = new WorkshopManager(this);
+        libraryManager = new LibraryManager(this);
+        uiManager = new UIManager(this);
     }
 
     private void registerCommands() {
@@ -108,6 +122,10 @@ public final class PrisonNEO extends JavaPlugin {
         getCommand("visitor").setExecutor(new VisitorCommand(this));
         getCommand("mail").setExecutor(new MailCommand(this));
         getCommand("prisonadmin").setExecutor(new AdminCommand(this));
+        getCommand("workshop").setExecutor(new WorkshopCommand(this));
+        getCommand("library").setExecutor(new LibraryCommand(this));
+        getCommand("achievement").setExecutor(new AchievementCommand(this));
+        getCommand("schedule").setExecutor(new ScheduleCommand(this));
     }
 
     private void registerListeners() {
@@ -121,6 +139,9 @@ public final class PrisonNEO extends JavaPlugin {
         getServer().getPluginManager().registerEvents(advancedEscapeManager, this);
         getServer().getPluginManager().registerEvents(visitorManager, this);
         getServer().getPluginManager().registerEvents(mailManager, this);
+        getServer().getPluginManager().registerEvents(achievementManager, this);
+        getServer().getPluginManager().registerEvents(workshopManager, this);
+        getServer().getPluginManager().registerEvents(libraryManager, this);
     }
 
     public static PrisonNEO getInstance() {
@@ -152,4 +173,11 @@ public final class PrisonNEO extends JavaPlugin {
     public RiotManager getRiotManager() { return riotManager; }
     public VisitorManager getVisitorManager() { return visitorManager; }
     public MailManager getMailManager() { return mailManager; }
+    public com.prisonneo.managers.SecurityManager getSecurityManager() { return securityManager; }
+    public PunishmentManager getPunishmentManager() { return punishmentManager; }
+    public ScheduleManager getScheduleManager() { return scheduleManager; }
+    public AchievementManager getAchievementManager() { return achievementManager; }
+    public WorkshopManager getWorkshopManager() { return workshopManager; }
+    public LibraryManager getLibraryManager() { return libraryManager; }
+    public UIManager getUIManager() { return uiManager; }
 }
