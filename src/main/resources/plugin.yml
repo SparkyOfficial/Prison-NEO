@@ -135,7 +135,6 @@ permissions:
   prison.*:
     description: All prison permissions
     children:
-      prison.admin: true
       prison.world: true
       prison.cell: true
       prison.rank: true
@@ -152,8 +151,6 @@ permissions:
   prison.admin:
     description: Full access to all prison admin commands
     default: op
-    children:
-      prison.*: true
   
   prison.workshop:
     description: Access to the workshop crafting system
