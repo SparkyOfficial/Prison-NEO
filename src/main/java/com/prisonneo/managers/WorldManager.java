@@ -128,19 +128,30 @@ public class WorldManager {
     private void generatePrisonStructures() {
         if (prisonWorld == null) return;
         
-        PrisonStructureBuilder builder = new PrisonStructureBuilder(plugin, prisonWorld);
-        
-        // Schedule structure generation to avoid lag
-        Bukkit.getScheduler().runTaskAsynchronously(plugin, () -> {
-            builder.buildMainPrison();
-            builder.buildCellBlocks();
-            builder.buildMines();
-            builder.buildYard();
-            builder.buildWalls();
-            
-            Bukkit.getScheduler().runTask(plugin, () -> {
+        // Run all world generation on main thread
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            try {
+                PrisonStructureBuilder builder = new PrisonStructureBuilder(plugin, prisonWorld);
+                
+                // Build structures in sequence
+                builder.buildMainPrison();
+                builder.buildCellBlocks();
+                builder.buildMines();
+                builder.buildYard();
+                builder.buildWalls();
+                
+                // Save the world after generation
+                prisonWorld.save();
                 plugin.getLogger().info("Prison structures generated successfully!");
-            });
+                
+                // Teleport all online players to the prison world
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.teleport(new Location(prisonWorld, 0, 70, 0));
+                }
+            } catch (Exception e) {
+                plugin.getLogger().severe("Error generating prison structures: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
     }
     

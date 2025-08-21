@@ -1,18 +1,41 @@
 package com.prisonneo.world;
 
 import com.prisonneo.PrisonNEO;
+import net.citizensnpcs.api.CitizensAPI;
+import net.citizensnpcs.api.event.NPCRightClickEvent;
+import net.citizensnpcs.api.npc.NPC;
+import net.citizensnpcs.api.npc.NPCRegistry;
+import net.citizensnpcs.api.trait.Trait;
+import net.citizensnpcs.api.trait.TraitName;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 
 public class NPCSpawner {
     
     private final PrisonNEO plugin;
     private final World world;
+    private NPCRegistry registry;
+    private static final String PROTECTED_METADATA = "protected";
     
     public NPCSpawner(PrisonNEO plugin, World world) {
         this.plugin = plugin;
         this.world = world;
+        
+        // Initialize Citizens registry
+        if (Bukkit.getPluginManager().isPluginEnabled("Citizens")) {
+            this.registry = CitizensAPI.getNPCRegistry();
+            if (this.registry == null) {
+                plugin.getLogger().severe("Failed to get Citizens NPC Registry! NPCs will not spawn.");
+            }
+        } else {
+            plugin.getLogger().severe("Citizens plugin not found! NPCs will not spawn.");
+        }
     }
     
     public void spawnAllNPCs() {
@@ -126,16 +149,101 @@ public class NPCSpawner {
         }
     }
     
-    private void spawnNPC(String name, double x, double y, double z, String type, String greeting) {
-        Location location = new Location(world, x, y, z);
+    private void spawnNPC(String name, int x, int y, int z, String type, String greeting) {
+        if (registry == null) {
+            plugin.getLogger().warning("Cannot spawn NPC " + name + " - Citizens registry not available");
+            return;
+        }
         
-        // Schedule NPC creation for next tick to avoid world loading issues
-        Bukkit.getScheduler().runTask(plugin, () -> {
-            try {
-                plugin.getNPCManager().createGuard(name, location, greeting, type + "_" + System.currentTimeMillis());
-            } catch (Exception e) {
-                plugin.getLogger().warning("Failed to spawn NPC " + name + ": " + e.getMessage());
+        try {
+            // Create location for the NPC
+            Location location = new Location(world, x + 0.5, y, z + 0.5);
+            
+            // Create the NPC
+            NPC npc = registry.createNPC(EntityType.PLAYER, ChatColor.translateAlternateColorCodes('&', name));
+            if (npc == null) {
+                plugin.getLogger().warning("Failed to create NPC: " + name);
+                return;
             }
-        });
+            
+            // Spawn the NPC
+            if (!npc.isSpawned()) {
+                npc.spawn(location);
+            } else {
+                npc.teleport(location, org.bukkit.event.player.PlayerTeleportEvent.TeleportCause.PLUGIN);
+            }
+            
+            // Make NPC look at players
+            npc.setProtected(true);
+            npc.data().set(PROTECTED_METADATA, true);
+            
+            // Add custom trait with type and greeting
+            NPCTrait trait = new NPCTrait(plugin, type, greeting);
+            npc.addTrait(trait);
+            
+            // Register events if not already registered
+            if (!npc.hasTrait(NPCTrait.class)) {
+                npc.addTrait(trait);
+            }
+            
+            plugin.getLogger().info("Spawned NPC: " + name + " (" + type + ") at " + location);
+        } catch (Exception e) {
+            plugin.getLogger().severe("Error spawning NPC " + name + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    
+    @TraitName("prisonnpc")
+    public static class NPCTrait extends Trait {
+        private final PrisonNEO plugin;
+        private final String type;
+        private final String greeting;
+        private boolean registered = false;
+        
+        // Required no-arg constructor for Citizens
+        public NPCTrait() {
+            this(null, "", "");
+        }
+        
+        public NPCTrait(PrisonNEO plugin, String type, String greeting) {
+            super("prisonnpc");
+            this.plugin = plugin != null ? plugin : (PrisonNEO) Bukkit.getPluginManager().getPlugin("PrisonNEO");
+            this.type = type != null ? type : "";
+            this.greeting = greeting != null ? greeting : "";
+        }
+        
+        @Override
+        public void onAttach() {
+            plugin.getLogger().info("Attached NPC trait: " + type);
+        }
+        
+        @Override
+        public void onSpawn() {
+            // Set NPC metadata when spawned
+            if (npc != null) {
+                npc.data().set("prisonnpc.type", type);
+                npc.data().set(PROTECTED_METADATA, true);
+            }
+        }
+        
+        @EventHandler
+        public void onNPCClick(NPCRightClickEvent event) {
+            if (event.getNPC().equals(npc)) {
+                Player player = event.getClicker();
+                if (greeting != null && !greeting.isEmpty()) {
+                    player.sendMessage(ChatColor.translateAlternateColorCodes('&', greeting));
+                }
+                // Add more interaction logic based on NPC type
+                switch (type) {
+                    case "guard":
+                        player.sendMessage(ChatColor.RED + "Нарушитель! В тюрьму!");
+                        break;
+                    case "shop":
+                        player.sendMessage(ChatColor.GREEN + "Что вы хотите купить?");
+                        break;
+                    // Add more cases for different NPC types
+                }
+            }
+        }
     }
 }

@@ -1,11 +1,22 @@
+# Main plugin information
 name: PrisonNEO
 version: '1.0.0'
 main: com.prisonneo.PrisonNEO
 api-version: '1.21'
 prefix: PrisonNEO
 authors: [PrisonNEO]
-description: Modern prison server plugin for Minecraft
+description: A modern prison server plugin for Minecraft with advanced features
+description-ru: Современный тюремный плагин для Minecraft с расширенными возможностями
 website: https://github.com/prisonneo/prison-neo
+
+# Dependencies
+softdepend: [Citizens, Vault, WorldEdit]
+
+# Plugin load order
+load: POSTWORLD
+
+# Default configuration
+config-version: 1.0
 
 commands:
   prison:
@@ -139,53 +150,237 @@ permissions:
       prison.mail: true
   
   prison.admin:
-    description: Admin permissions
+    description: Full access to all prison admin commands
+    default: op
+    children:
+      prison.*: true
+  
+  prison.workshop:
+    description: Access to the workshop crafting system
+    default: true
+    children:
+      prison.workshop.use: true
+      prison.workshop.upgrade: true
+  
+  prison.workshop.use:
+    description: Use the workshop crafting system
+    default: true
+  
+  prison.workshop.upgrade:
+    description: Upgrade workshop levels
+    default: true
+  
+  prison.library:
+    description: Access to the prison library system
+    default: true
+    children:
+      prison.library.read: true
+      prison.library.borrow: true
+  
+  prison.library.read:
+    description: Read books in the library
+    default: true
+  
+  prison.library.borrow:
+    description: Borrow books from the library
+    default: true
+  
+  prison.achievement:
+    description: View and manage achievements
+    default: true
+    children:
+      prison.achievement.view: true
+      prison.achievement.reward: true
+  
+  prison.achievement.view:
+    description: View achievements
+    default: true
+  
+  prison.achievement.reward:
+    description: Receive achievement rewards
+    default: true
+  
+  prison.schedule:
+    description: View prison schedule
+    default: true
+    children:
+      prison.schedule.view: true
+      prison.schedule.manage: false
+  
+  prison.schedule.view:
+    description: View the prison schedule
+    default: true
+  
+  prison.schedule.manage:
+    description: Manage prison schedule
     default: op
   
   prison.world:
-    description: World management permissions
+    description: Access to prison world commands
+    default: op
+    children:
+      prison.world.teleport: true
+      prison.world.manage: true
+  
+  prison.world.teleport:
+    description: Teleport to prison world
+    default: true
+  
+  prison.world.manage:
+    description: Manage prison world (create/reset)
     default: op
   
-  prison.cell:
-    description: Cell permissions
+  prison.npc.interact:
+    description: Interact with NPCs
     default: true
   
-  prison.rank:
-    description: Rank permissions
+  prison.notify:
+    description: Receive prison notifications
     default: true
+    children:
+      prison.notify.events: true
+      prison.notify.updates: true
   
-  prison.mine:
-    description: Mine permissions
+  prison.prisoner:
+    description: Basic prisoner permissions
     default: true
+    children:
+      prison.prisoner.chat: true
+      prison.prisoner.items: true
+  
+  prison.staff:
+    description: Prison staff permissions
+    default: op
+    children:
+      prison.staff.moderate: true
+      prison.staff.manage: true
   
   prison.gang:
     description: Gang permissions
     default: true
+    children:
+      prison.gang.create: true
+      prison.gang.invite: true
+      prison.gang.manage: false
   
-  prison.contraband:
-    description: Contraband permissions
+  prison.gang.create:
+    description: Create a gang
     default: true
   
+  prison.gang.invite:
+    description: Invite players to gang
+    default: true
+  
+  prison.gang.manage:
+    description: Manage gang settings
+    default: op
+  
   prison.job:
-    description: Job permissions
+    description: Job system permissions
+    default: true
+    children:
+      prison.job.join: true
+      prison.job.quit: true
+      prison.job.bonus: true
+  
+  prison.job.join:
+    description: Join a job
+    default: true
+  
+  prison.job.quit:
+    description: Quit current job
+    default: true
+  
+  prison.job.bonus:
+    description: Receive job bonuses
     default: true
   
   prison.minigame:
     description: Minigame permissions
     default: true
+    children:
+      prison.minigame.join: true
+      prison.minigame.create: false
+      prison.minigame.rewards: true
   
-  prison.loan:
-    description: Loan permissions
+  prison.minigame.join:
+    description: Join minigames
     default: true
   
+  prison.minigame.create:
+    description: Create minigames
+    default: op
+  
+  prison.minigame.rewards:
+    description: Receive minigame rewards
+    default: true
+  
+  prison.loan:
+    description: Loan system permissions
+    default: true
+    children:
+      prison.loan.request: true
+      prison.loan.pay: true
+      prison.loan.manage: false
+  
+  prison.loan.request:
+    description: Request a loan
+    default: true
+  
+  prison.loan.pay:
+    description: Pay back loans
+    default: true
+  
+  prison.loan.manage:
+    description: Manage player loans
+    default: op
+  
   prison.escape:
-    description: Escape permissions
+    description: Escape system permissions
+    default: true
+    children:
+      prison.escape.attempt: true
+      prison.escape.rewards: true
+  
+  prison.escape.attempt:
+    description: Attempt to escape
+    default: true
+  
+  prison.escape.rewards:
+    description: Receive escape rewards
     default: true
   
   prison.visitor:
-    description: Visitor permissions
+    description: Visitor system permissions
+    default: true
+    children:
+      prison.visitor.visit: true
+      prison.visitor.invite: true
+  
+  prison.visitor.visit:
+    description: Visit the prison
+    default: true
+  
+  prison.visitor.invite:
+    description: Invite visitors
     default: true
   
   prison.mail:
-    description: Mail permissions
+    description: Mail system permissions
     default: true
+    children:
+      prison.mail.send: true
+      prison.mail.receive: true
+      prison.mail.manage: false
+  
+  prison.mail.send:
+    description: Send mail
+    default: true
+  
+  prison.mail.receive:
+    description: Receive mail
+    default: true
+  
+  prison.mail.manage:
+    description: Manage mail system
+    default: op

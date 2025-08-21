@@ -2,6 +2,7 @@ com\prisonneo\managers\EventManager$3.class
 com\prisonneo\managers\DoctorManager.class
 com\prisonneo\managers\AchievementManager.class
 com\prisonneo\world\NPCSpawner.class
+com\prisonneo\world\NPCSpawner$NPCTrait.class
 com\prisonneo\commands\AchievementCommand.class
 com\prisonneo\managers\MailManager$PrisonMail.class
 com\prisonneo\listeners\BlockBreakListener.class

@@ -3,11 +3,17 @@ package com.prisonneo.world;
 import com.prisonneo.PrisonNEO;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import java.util.ArrayDeque;
+import java.util.Queue;
+import java.util.Random;
 
 public class PrisonStructureBuilder {
     
     private final PrisonNEO plugin;
     private final World world;
+    private final Queue<Runnable> blockChangeQueue = new ArrayDeque<>();
+    private final Random random = new Random();
     
     public PrisonStructureBuilder(PrisonNEO plugin, World world) {
         this.plugin = plugin;
@@ -15,14 +21,25 @@ public class PrisonStructureBuilder {
     }
     
     public void buildMainPrison() {
-        // Main prison building (-100 to 100, y=61-80, z=-100 to 100)
-        buildRectangle(-100, 61, -100, 100, 80, 100, Material.STONE_BRICKS, true);
-        
-        // Prison entrance
-        buildEntrance();
-        
-        // Administrative building
-        buildAdminBuilding();
+        try {
+            // Main prison building (-100 to 100, y=61-80, z=-100 to 100)
+            buildRectangle(-100, 61, -100, 100, 80, 100, Material.STONE_BRICKS, true);
+            
+            // Prison entrance
+            buildEntrance();
+            
+            // Administrative building
+            buildAdminBuilding();
+            
+            // Process all block changes
+            processBlockChanges();
+            
+            // Save the world
+            world.save();
+        } catch (Exception e) {
+            plugin.getLogger().severe("Error building main prison: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
     
     public void buildCellBlocks() {
@@ -61,7 +78,7 @@ public class PrisonStructureBuilder {
                 
                 // Add some decorative elements
                 if (x % 10 == 0 && z % 10 == 0) {
-                    world.getBlockAt(x, 62, z).setType(Material.TORCH);
+                    setBlock(x, 62, z, Material.TORCH);
                 }
             }
         }
@@ -74,15 +91,22 @@ public class PrisonStructureBuilder {
     }
     
     public void buildWalls() {
-        // Outer prison walls (-200 to 200, y=61-85)
-        buildPerimeter(-200, 200, -200, 200, 61, 85, Material.STONE_BRICK_WALL);
+        // Build perimeter walls
+        buildRectangle(-200, 60, -200, 200, 100, -190, Material.STONE_BRICKS, false);
+        buildRectangle(-200, 60, 190, 200, 100, 200, Material.STONE_BRICKS, false);
+        buildRectangle(-200, 60, -189, -190, 100, 189, Material.STONE_BRICKS, false);
+        buildRectangle(190, 60, -189, 200, 100, 189, Material.STONE_BRICKS, false);
         
-        // Guard towers
-        buildGuardTower(-190, 61, -190);
-        buildGuardTower(190, 61, -190);
-        buildGuardTower(-190, 61, 190);
-        buildGuardTower(190, 61, 190);
+        // Add guard towers at corners
+        buildGuardTower(-190, 60, -190);
+        buildGuardTower(-190, 60, 190);
+        buildGuardTower(190, 60, -190);
+        buildGuardTower(190, 60, 190);
+        
+        // Process any remaining block changes
+        processBlockChanges();
     }
+    
     
     private void buildCellBlock(int x1, int x2, int z1, int z2, String blockName) {
         // Outer walls
@@ -252,52 +276,71 @@ public class PrisonStructureBuilder {
         }
     }
     
-    private void buildRectangle(int x1, int y1, int z1, int x2, int y2, int z2, Material material, boolean hollow) {
-        for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
-            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
-                for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
-                    if (hollow) {
-                        // Only build walls, floor, and ceiling
-                        if (x == Math.min(x1, x2) || x == Math.max(x1, x2) ||
-                            y == Math.min(y1, y2) || y == Math.max(y1, y2) ||
-                            z == Math.min(z1, z2) || z == Math.max(z1, z2)) {
-                            world.getBlockAt(x, y, z).setType(material);
-                        }
-                    } else {
-                        world.getBlockAt(x, y, z).setType(material);
-                    }
-                }
+    private void setBlock(int x, int y, int z, Material material) {
+        if (world == null) return;
+        
+        // Add block change to the queue
+        blockChangeQueue.add(() -> {
+            Block block = world.getBlockAt(x, y, z);
+            if (block.getType() != material) {
+                block.setType(material, false);
             }
+        });
+        
+        // Process queue if it gets too large
+        if (blockChangeQueue.size() > 1000) {
+            processBlockChanges();
         }
     }
     
-    private void buildPerimeter(int x1, int x2, int z1, int z2, int y1, int y2, Material material) {
-        // North wall
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                world.getBlockAt(x, y, z1).setType(material);
+    private void processBlockChanges() {
+        if (world == null || blockChangeQueue.isEmpty()) return;
+        
+        // Process up to 1000 block changes at once
+        int processed = 0;
+        while (!blockChangeQueue.isEmpty() && processed < 1000) {
+            Runnable task = blockChangeQueue.poll();
+            if (task != null) {
+                task.run();
+                processed++;
             }
         }
         
-        // South wall
-        for (int x = x1; x <= x2; x++) {
-            for (int y = y1; y <= y2; y++) {
-                world.getBlockAt(x, y, z2).setType(material);
+        // Save the world if we processed any changes
+        if (processed > 0) {
+            world.save();
+        }
+    }
+    
+    private void buildRectangle(int x1, int y1, int z1, int x2, int y2, int z2, Material material, boolean hollow) {
+        int minX = Math.min(x1, x2);
+        int maxX = Math.max(x1, x2);
+        int minY = Math.min(y1, y2);
+        int maxY = Math.max(y1, y2);
+        int minZ = Math.min(z1, z2);
+        int maxZ = Math.max(z1, z2);
+
+        for (int x = minX; x <= maxX; x++) {
+            for (int y = minY; y <= maxY; y++) {
+                for (int z = minZ; z <= maxZ; z++) {
+                    if (hollow) {
+                        // Only build walls, floor, and ceiling
+                        if (x == minX || x == maxX || y == minY || y == maxY || z == minZ || z == maxZ) {
+                            setBlock(x, y, z, material);
+                        }
+                    } else {
+                        setBlock(x, y, z, material);
+                    }
+                }
+            }
+            
+            // Process block changes periodically to prevent memory issues
+            if ((x - minX) % 10 == 0) {
+                processBlockChanges();
             }
         }
         
-        // West wall
-        for (int z = z1; z <= z2; z++) {
-            for (int y = y1; y <= y2; y++) {
-                world.getBlockAt(x1, y, z).setType(material);
-            }
-        }
-        
-        // East wall
-        for (int z = z1; z <= z2; z++) {
-            for (int y = y1; y <= y2; y++) {
-                world.getBlockAt(x2, y, z).setType(material);
-            }
-        }
+        // Process any remaining block changes
+        processBlockChanges();
     }
 }
