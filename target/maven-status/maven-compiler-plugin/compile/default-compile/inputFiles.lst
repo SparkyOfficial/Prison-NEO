@@ -35,6 +35,7 @@ C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\NP
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\listeners\NPCClickListener.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\RiotManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\world\WorldGenerator.java
+C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\core\PlayerManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\listeners\PlayerJoinListener.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\managers\VisitorManager.java
 C:\Users\Богдан\Desktop\Prison NEO\src\main\java\com\prisonneo\commands\EscapeCommand.java
