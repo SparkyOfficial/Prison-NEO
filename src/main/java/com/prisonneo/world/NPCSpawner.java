@@ -46,54 +46,44 @@ public class NPCSpawner {
             spawnShopNPCs();
             spawnSpecialNPCs();
             spawnRandomPrisoners();
-            
+            spawnSolitaryGuards(); // Add solitary guards
+
             plugin.getLogger().info("All NPCs spawned successfully!");
         }, 200L); // 10 second delay
     }
     
     private void spawnGuards() {
         // Main entrance guards
-        spawnNPC("Охранник Петров", 0, 62, -95, "guard", "§cСтой! Предъяви документы!");
-        spawnNPC("Охранник Сергеев", 5, 62, -95, "guard", "§cПроходи только по пропуску!");
-        
+        spawnNPC("Охранник Петров", 0, 62, -195, "guard", "§cСтой! Предъяви документы!");
+        spawnNPC("Охранник Сергеев", 5, 62, -195, "guard", "§cПроходи только по пропуску!");
+
         // Yard patrol
-        spawnNPC("Охранник Иванов", -20, 62, 0, "guard", "§eНе нарушай порядок в дворе!");
-        spawnNPC("Охранник Сидоров", 20, 62, 0, "guard", "§eВремя прогулки ограничено!");
-        spawnNPC("Охранник Козлов", 0, 62, 20, "guard", "§eСоблюдай дисциплину!");
-        
+        spawnNPC("Охранник Иванов", -20, 63, 0, "guard", "§eНе нарушай порядок во дворе!");
+        spawnNPC("Охранник Сидоров", 20, 63, 0, "guard", "§eВремя прогулки ограничено!");
+        spawnNPC("Охранник Козлов", 0, 63, 20, "guard", "§eСоблюдай дисциплину!");
+
         // Block supervisors
-        spawnNPC("Надзиратель Волков", -60, 62, -60, "guard", "§6Тишина в блоке А!");
-        spawnNPC("Надзиратель Медведев", 60, 62, -60, "guard", "§6Соблюдай режим!");
-        spawnNPC("Надзиратель Лисицын", -60, 62, 60, "guard", "§6Порядок превыше всего!");
-        spawnNPC("Надзиратель Орлов", 60, 62, 60, "guard", "§6Никаких нарушений!");
-        
-        // Mine guards
-        spawnNPC("Горный Надзиратель", -130, 45, -130, "guard", "§aРаботай усердно!");
-        spawnNPC("Шахтный Охранник", 130, 45, -130, "guard", "§aБез лени в шахте!");
-        
+        spawnNPC("Надзиратель Волков", -80, 63, -80, "guard", "§6Тишина в блоке А!");
+        spawnNPC("Надзиратель Медведев", 80, 63, -80, "guard", "§6Соблюдай режим!");
+
         // Tower guards
-        spawnNPC("Снайпер Алексеев", -190, 77, -190, "guard", "§cЯ вижу всё с башни!");
-        spawnNPC("Снайпер Николаев", 190, 77, 190, "guard", "§cНи один побег не пройдёт!");
+        spawnNPC("Снайпер Алексеев", -190, 85, -190, "guard", "§cЯ вижу всё с башни!");
+        spawnNPC("Снайпер Николаев", 190, 85, 190, "guard", "§cНи один побег не пройдёт!");
     }
     
     private void spawnJobNPCs() {
-        // Kitchen staff
-        spawnNPC("Повар Михалыч", -70, 63, 10, "kitchen", "§eХочешь работать на кухне? Плачу $5 за смену!");
-        spawnNPC("Кухонный Помощник", -65, 63, 15, "kitchen", "§eПомогай на кухне, заработаешь денег!");
-        
-        // Laundry staff
-        spawnNPC("Прачка Мария", -40, 63, -40, "laundry", "§bРабота в прачечной - $4 за смену!");
-        spawnNPC("Работник Прачечной", -35, 63, -35, "laundry", "§bСтирка белья - честная работа!");
-        
-        // Library staff
-        spawnNPC("Библиотекарь Анна", 70, 63, 10, "library", "§dПомощь в библиотеке - $3 за смену!");
-        
+        // Cafeteria staff (at -45, 63, 58)
+        spawnNPC("Повар Михалыч", -45, 63, 58, "kitchen", "§eХочешь работать на кухне? Плачу $5 за смену!");
+        spawnNPC("Кухонный Помощник", -42, 63, 58, "kitchen", "§eПомогай на кухне, заработаешь денег!");
+
+        // Library staff (at 30, 63, 58)
+        spawnNPC("Библиотекарь Анна", 30, 63, 58, "library", "§dПомощь в библиотеке - $3 за смену!");
+
+        // Workshop staff (at -70, 63, -80)
+        spawnNPC("Мастер Цеха", -70, 63, -80, "workshop", "§9Нужны рабочие руки в мастерской. Оплата достойная.");
+
         // Janitor
         spawnNPC("Уборщик Петя", 30, 63, -30, "janitor", "§7Уборка территории - $3 за смену!");
-        spawnNPC("Санитар Коля", -30, 63, 30, "janitor", "§7Поддержание чистоты - важная работа!");
-        
-        // Maintenance
-        spawnNPC("Слесарь Виктор", 50, 63, -50, "job_maintenance", "§9Ремонт и техобслуживание - $4 за смену!");
     }
     
     private void spawnShopNPCs() {
@@ -114,19 +104,14 @@ public class NPCSpawner {
         // Administration
         spawnNPC("Начальник Тюрьмы", 75, 63, -15, "warden", "§4Я здесь главный! Что тебе нужно?");
         spawnNPC("Заместитель Начальника", 70, 63, -20, "deputy_warden", "§4Все вопросы через меня!");
-        
+
+        // Medical staff (at 60, 63, -85)
+        spawnNPC("Доктор Смирнов", 60, 63, -85, "doctor", "§2Медицинская помощь и лечение!");
+        spawnNPC("Медсестра Елена", 62, 63, -85, "doctor", "§2Помогу с лечением.");
+
         // Services
         spawnNPC("Адвокат Петрова", 65, 63, -25, "lawyer", "§1Нужна юридическая помощь? Обращайся!");
-        spawnNPC("Доктор Смирнов", 85, 63, -25, "doctor", "§2Медицинская помощь и лечение!");
         spawnNPC("Психолог Анна", 80, 63, -20, "psychologist", "§3Психологическая поддержка и консультации!");
-        
-        // Informants
-        spawnNPC("Стукач Вася", 10, 63, 40, "informant", "§8Псст... у меня есть информация...");
-        spawnNPC("Информатор Гена", -15, 63, 35, "informant", "§8Знаю все секреты тюрьмы...");
-        
-        // Visitors
-        spawnNPC("Священник Отец Иоанн", 40, 63, 40, "priest", "§fБлагословение и духовная поддержка!");
-        spawnNPC("Социальный Работник", 45, 63, 35, "social_worker", "§5Помогу с адаптацией в тюрьме!");
     }
     
     private void spawnRandomPrisoners() {
@@ -142,11 +127,17 @@ public class NPCSpawner {
             String name = prisonerNames[i % prisonerNames.length] + " " + (i + 1);
             
             // Random locations around prison
-            int x = -80 + (int)(Math.random() * 160);
-            int z = -80 + (int)(Math.random() * 160);
+            int x = -180 + (int)(Math.random() * 360);
+            int z = -180 + (int)(Math.random() * 360);
             
-            spawnNPC(name, x, 62, z, "prisoner", "§7Привет, как дела?");
+            spawnNPC(name, x, 63, z, "prisoner", "§7Привет, как дела?");
         }
+    }
+
+    private void spawnSolitaryGuards() {
+        // Solitary confinement guards
+        spawnNPC("Охранник Карцера", -130, 56, -12, "guard", "§cЗдесь строгий режим. Нарушители будут наказаны.");
+        spawnNPC("Надзиратель Блока Д", -132, 56, -12, "guard", "§cНикаких разговоров. Полная тишина.");
     }
     
     private void spawnNPC(String name, int x, int y, int z, String type, String greeting) {

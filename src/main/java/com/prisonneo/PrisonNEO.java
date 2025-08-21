@@ -127,6 +127,8 @@ public final class PrisonNEO extends JavaPlugin {
         getCommand("library").setExecutor(new LibraryCommand(this));
         getCommand("achievement").setExecutor(new AchievementCommand(this));
         getCommand("schedule").setExecutor(new ScheduleCommand(this));
+        getCommand("doctor").setExecutor(new DoctorCommand(this));
+        getCommand("testschedule").setExecutor(new TestScheduleCommand(this));
     }
 
     private void registerListeners() {

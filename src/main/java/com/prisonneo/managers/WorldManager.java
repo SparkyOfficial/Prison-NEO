@@ -138,6 +138,11 @@ public class WorldManager {
                 builder.buildCellBlocks();
                 builder.buildMines();
                 builder.buildYard();
+                builder.buildCafeteria();
+                builder.buildLibrary();
+                builder.buildWorkshop();
+                builder.buildMedicalBlock();
+                builder.buildSolitaryConfinement();
                 builder.buildWalls();
                 
                 // Save the world after generation
@@ -165,8 +170,25 @@ public class WorldManager {
     
     public void teleportToPrison(Player player) {
         if (prisonWorld != null) {
-            Location spawn = new Location(prisonWorld, 0, 61, 0);
+            // Safe spawn location with better positioning
+            Location spawn = new Location(prisonWorld, 0.5, 62, 0.5);
+            spawn.setYaw(0); // Face north
+            spawn.setPitch(0);
+            
             player.teleport(spawn);
+            
+            // Add some atmospheric effects
+            player.sendTitle(ChatColor.DARK_RED + "PRISON NEO", 
+                           ChatColor.GRAY + "Добро пожаловать в тюрьму", 
+                           10, 70, 20);
+            
+            // Play prison atmosphere sound
+            player.playSound(player.getLocation(), Sound.BLOCK_IRON_DOOR_CLOSE, 1.0f, 0.8f);
+            
+            plugin.getLogger().info("Player " + player.getName() + " teleported to prison world");
+        } else {
+            player.sendMessage(ChatColor.RED + "Тюремный мир не загружен! Обратитесь к администратору.");
+            plugin.getLogger().warning("Attempted to teleport " + player.getName() + " to prison world, but world is null!");
         }
     }
     

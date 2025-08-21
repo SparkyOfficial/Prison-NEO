@@ -131,7 +131,7 @@ public class DoctorManager implements Listener {
         
         // Increase suspicion
         if (plugin.getContrabandManager() != null) {
-            // Add suspicion logic here when ContrabandManager is available
+            plugin.getContrabandManager().addSuspicion(player, 5);
         }
     }
 }

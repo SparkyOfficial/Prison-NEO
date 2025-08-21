@@ -15,11 +15,27 @@ public class PunishmentManager {
     private final PrisonNEO plugin;
     private final Map<UUID, List<String>> playerViolations;
     private final Map<UUID, Long> punishmentEndTimes;
+    private final List<Location> solitaryCells = new ArrayList<>();
+    private final Map<Location, UUID> occupiedCells = new HashMap<>();
+    private final Map<UUID, Location> playerCellMap = new HashMap<>();
     
     public PunishmentManager(PrisonNEO plugin) {
         this.plugin = plugin;
         this.playerViolations = new HashMap<>();
         this.punishmentEndTimes = new HashMap<>();
+        initializeSolitaryCells();
+    }
+
+    private void initializeSolitaryCells() {
+        World prisonWorld = plugin.getWorldManager().getPrisonWorld();
+        if (prisonWorld == null) return;
+
+        int cellSize = 4;
+        for (int x = -145; x <= -115; x += cellSize + 1) {
+            for (int z = -45; z <= -15; z += cellSize + 1) {
+                solitaryCells.add(new Location(prisonWorld, x + 2.5, 56, z + 2.5));
+            }
+        }
     }
     
     public void addViolation(Player player, String violation) {
@@ -69,16 +85,34 @@ public class PunishmentManager {
     }
     
     private void sendToSolitary(Player player, int minutes) {
-        Location solitary = new Location(plugin.getWorldManager().getPrisonWorld(), 0, 50, -150);
-        player.teleport(solitary);
-        
-        punishmentEndTimes.put(player.getUniqueId(), System.currentTimeMillis() + (minutes * 60 * 1000L));
-        
-        player.sendMessage("§4Карцер на " + minutes + " минут!");
-        
+        Location solitaryCell = findAvailableSolitaryCell();
+        if (solitaryCell == null) {
+            player.sendMessage("§cВсе одиночные камеры заняты. Вам повезло... на этот раз.");
+            // Fallback or queueing logic can be added here
+            return;
+        }
+
+        player.teleport(solitaryCell);
+        UUID playerUUID = player.getUniqueId();
+        occupiedCells.put(solitaryCell, playerUUID);
+        playerCellMap.put(playerUUID, solitaryCell);
+
+        punishmentEndTimes.put(playerUUID, System.currentTimeMillis() + (minutes * 60 * 1000L));
+
+        player.sendMessage("§4Вы отправлены в карцер на " + minutes + " минут!");
+
         Bukkit.getScheduler().runTaskLater(plugin, () -> {
             releasePunishment(player);
-        }, minutes * 1200L);
+        }, minutes * 1200L); // 20 ticks per second * 60 seconds
+    }
+
+    private Location findAvailableSolitaryCell() {
+        for (Location cell : solitaryCells) {
+            if (!occupiedCells.containsKey(cell)) {
+                return cell;
+            }
+        }
+        return null; // No available cells
     }
     
     private void sendToMaxSecurity(Player player) {
@@ -99,7 +133,13 @@ public class PunishmentManager {
     private void releasePunishment(Player player) {
         if (!player.isOnline()) return;
         
-        punishmentEndTimes.remove(player.getUniqueId());
+        UUID playerUUID = player.getUniqueId();
+        punishmentEndTimes.remove(playerUUID);
+
+        Location cell = playerCellMap.remove(playerUUID);
+        if (cell != null) {
+            occupiedCells.remove(cell);
+        }
         
         Location yard = new Location(plugin.getWorldManager().getPrisonWorld(), 0, 62, 0);
         player.teleport(yard);

@@ -107,6 +107,10 @@ public class RankManager {
         return prisonPlayer.getName();
     }
     
+    public RankData getPlayerRank(PrisonPlayer prisonPlayer) {
+        return ranks.get(prisonPlayer.getRank());
+    }
+    
     public static class RankData {
         private final String name;
         private final String displayName;

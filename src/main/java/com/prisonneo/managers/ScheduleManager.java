@@ -66,7 +66,7 @@ public class ScheduleManager {
         }
     }
     
-    private void triggerScheduleEvent(ScheduleEvent event) {
+    public void triggerScheduleEvent(ScheduleEvent event) {
         currentEvent = event;
         
         Bukkit.broadcastMessage("§6§l[РАСПИСАНИЕ] " + event.getName().toUpperCase());
@@ -76,19 +76,19 @@ public class ScheduleManager {
                 handleWakeUp();
                 break;
             case BREAKFAST:
-                handleMealTime("завтрак", new Location(plugin.getWorldManager().getPrisonWorld(), -70, 63, 10));
+                handleMealTime("завтрак", new Location(plugin.getWorldManager().getPrisonWorld(), -30, 63, 70));
                 break;
             case WORK_TIME:
                 handleWorkTime();
                 break;
             case LUNCH:
-                handleMealTime("обед", new Location(plugin.getWorldManager().getPrisonWorld(), -70, 63, 10));
+                handleMealTime("обед", new Location(plugin.getWorldManager().getPrisonWorld(), -30, 63, 70));
                 break;
             case RECREATION:
                 handleRecreationTime();
                 break;
             case DINNER:
-                handleMealTime("ужин", new Location(plugin.getWorldManager().getPrisonWorld(), -70, 63, 10));
+                handleMealTime("ужин", new Location(plugin.getWorldManager().getPrisonWorld(), -30, 63, 70));
                 break;
             case CELL_TIME:
                 handleCellTime();

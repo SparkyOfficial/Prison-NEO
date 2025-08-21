@@ -71,25 +71,54 @@ public class PrisonStructureBuilder {
     }
     
     public void buildYard() {
-        // Central yard (-30 to 30, y=61, z=-30 to 30)
-        for (int x = -30; x <= 30; x++) {
-            for (int z = -30; z <= 30; z++) {
-                world.getBlockAt(x, 61, z).setType(Material.GRASS_BLOCK);
-                
-                // Add some decorative elements
-                if (x % 10 == 0 && z % 10 == 0) {
-                    setBlock(x, 62, z, Material.TORCH);
+        // Central yard (-35 to 35, y=61, z=-35 to 35)
+        for (int x = -35; x <= 35; x++) {
+            for (int z = -35; z <= 35; z++) {
+                setBlock(x, 61, z, Material.GRASS_BLOCK);
+            }
+        }
+        
+        // Yard perimeter fence
+        buildRectangle(-35, 62, -35, 35, 65, -34, Material.IRON_BARS, false);
+        buildRectangle(-35, 62, 34, 35, 65, 35, Material.IRON_BARS, false);
+        buildRectangle(-35, 62, -34, -34, 65, 34, Material.IRON_BARS, false);
+        buildRectangle(34, 62, -34, 35, 65, 34, Material.IRON_BARS, false);
+        
+        // Yard lighting - tall lamp posts
+        for (int x = -30; x <= 30; x += 15) {
+            for (int z = -30; z <= 30; z += 15) {
+                // Lamp post
+                for (int y = 62; y <= 68; y++) {
+                    setBlock(x, y, z, Material.IRON_BARS);
                 }
+                setBlock(x, 69, z, Material.GLOWSTONE);
+                setBlock(x - 1, 68, z, Material.GLOWSTONE);
+                setBlock(x + 1, 68, z, Material.GLOWSTONE);
+                setBlock(x, 68, z - 1, Material.GLOWSTONE);
+                setBlock(x, 68, z + 1, Material.GLOWSTONE);
             }
         }
         
         // Basketball court
         buildBasketballCourt();
         
-        // Exercise area
-        buildExerciseArea();
+        // Build structures in sequence
+        buildMainPrison();
+        buildCellBlocks();
+        buildMines();
+        buildYard();
+        buildCafeteria();
+        buildLibrary();
+        buildWorkshop();
+        buildMedicalBlock();
+        buildSolitaryConfinement();
+        buildWalls();
+        
+        // Walking path
+        buildWalkingPath();
     }
     
+    // ... rest of the code remains the same ...
     public void buildWalls() {
         // Build perimeter walls
         buildRectangle(-200, 60, -200, 200, 100, -190, Material.STONE_BRICKS, false);
@@ -109,41 +138,117 @@ public class PrisonStructureBuilder {
     
     
     private void buildCellBlock(int x1, int x2, int z1, int z2, String blockName) {
-        // Outer walls
+        // Outer walls with windows
         buildRectangle(x1, 62, z1, x2, 75, z2, Material.STONE_BRICKS, true);
         
-        // Interior cells (3x3 each)
+        // Add windows to outer walls
+        for (int x = x1 + 5; x < x2; x += 8) {
+            setBlock(x, 68, z1, Material.GLASS_PANE);
+            setBlock(x, 69, z1, Material.GLASS_PANE);
+            setBlock(x, 68, z2, Material.GLASS_PANE);
+            setBlock(x, 69, z2, Material.GLASS_PANE);
+        }
+        for (int z = z1 + 5; z < z2; z += 8) {
+            setBlock(x1, 68, z, Material.GLASS_PANE);
+            setBlock(x1, 69, z, Material.GLASS_PANE);
+            setBlock(x2, 68, z, Material.GLASS_PANE);
+            setBlock(x2, 69, z, Material.GLASS_PANE);
+        }
+        
+        // Main corridor floor
+        for (int x = x1 + 1; x < x2; x++) {
+            for (int z = z1 + 1; z < z2; z++) {
+                setBlock(x, 62, z, Material.POLISHED_ANDESITE);
+            }
+        }
+        
+        // Interior cells (6x6 each)
         int cellSize = 6;
-        for (int x = x1 + 2; x < x2 - cellSize; x += cellSize) {
-            for (int z = z1 + 2; z < z2 - cellSize; z += cellSize) {
+        for (int x = x1 + 3; x < x2 - cellSize; x += cellSize + 2) {
+            for (int z = z1 + 3; z < z2 - cellSize; z += cellSize + 2) {
                 buildCell(x, z, cellSize);
             }
         }
         
-        // Corridor lighting
-        for (int x = x1 + 1; x < x2; x += 4) {
-            for (int z = z1 + 1; z < z2; z += 4) {
-                world.getBlockAt(x, 74, z).setType(Material.GLOWSTONE);
+        // Enhanced corridor lighting
+        for (int x = x1 + 3; x < x2; x += 6) {
+            for (int z = z1 + 3; z < z2; z += 6) {
+                setBlock(x, 74, z, Material.GLOWSTONE);
+                // Add hanging lamps
+                setBlock(x, 73, z, Material.CHAIN);
+                setBlock(x, 72, z, Material.LANTERN);
             }
         }
+        
+        // Security cameras (decorative)
+        setBlock(x1 + 2, 73, z1 + 2, Material.OBSERVER);
+        setBlock(x2 - 2, 73, z1 + 2, Material.OBSERVER);
+        setBlock(x1 + 2, 73, z2 - 2, Material.OBSERVER);
+        setBlock(x2 - 2, 73, z2 - 2, Material.OBSERVER);
+        
+        // Guard station in center
+        int centerX = (x1 + x2) / 2;
+        int centerZ = (z1 + z2) / 2;
+        buildRectangle(centerX - 2, 62, centerZ - 2, centerX + 2, 68, centerZ + 2, Material.QUARTZ_BLOCK, true);
+        setBlock(centerX, 63, centerZ, Material.OAK_STAIRS); // Guard chair
+        setBlock(centerX + 1, 63, centerZ, Material.LECTERN); // Control panel
+        
+        // Block identification sign
+        setBlock(x1, 70, z1 + 5, Material.OAK_SIGN);
     }
     
     private void buildCell(int x, int z, int size) {
-        // Cell walls
-        buildRectangle(x, 62, z, x + size, 68, z + size, Material.IRON_BARS, true);
+        // Cell walls - mixed materials for realism
+        buildRectangle(x, 62, z, x + size, 68, z + size, Material.STONE_BRICKS, true);
+        
+        // Iron bars for front wall
+        for (int y = 63; y <= 66; y++) {
+            setBlock(x, y, z + 1, Material.IRON_BARS);
+            setBlock(x, y, z + 2, Material.IRON_BARS);
+            setBlock(x, y, z + 3, Material.IRON_BARS);
+        }
+        
+        // Cell door
+        setBlock(x, 63, z + 2, Material.IRON_DOOR);
+        setBlock(x, 64, z + 2, Material.IRON_DOOR);
         
         // Cell floor
         for (int cx = x + 1; cx < x + size; cx++) {
             for (int cz = z + 1; cz < z + size; cz++) {
-                world.getBlockAt(cx, 62, cz).setType(Material.SMOOTH_STONE);
+                setBlock(cx, 62, cz, Material.SMOOTH_STONE);
             }
         }
         
-        // Bed
-        world.getBlockAt(x + 1, 63, z + 1).setType(Material.RED_BED);
+        // Cell ceiling
+        for (int cx = x + 1; cx < x + size; cx++) {
+            for (int cz = z + 1; cz < z + size; cz++) {
+                setBlock(cx, 67, cz, Material.SMOOTH_STONE_SLAB);
+            }
+        }
         
-        // Toilet
-        world.getBlockAt(x + size - 2, 63, z + size - 2).setType(Material.CAULDRON);
+        // Bed with pillow
+        setBlock(x + 1, 63, z + 1, Material.RED_BED);
+        setBlock(x + 2, 63, z + 1, Material.WHITE_WOOL); // Pillow
+        
+        // Toilet and sink
+        setBlock(x + size - 2, 63, z + size - 2, Material.CAULDRON);
+        setBlock(x + size - 2, 64, z + size - 3, Material.ITEM_FRAME); // Mirror
+        
+        // Small table
+        setBlock(x + 3, 63, z + 3, Material.OAK_PRESSURE_PLATE);
+        setBlock(x + 3, 62, z + 3, Material.OAK_FENCE);
+        
+        // Cell lighting
+        setBlock(x + 2, 66, z + 3, Material.REDSTONE_LAMP);
+        setBlock(x + 2, 65, z + 3, Material.LEVER); // Light switch
+        
+        // Personal items
+        if (random.nextBoolean()) {
+            setBlock(x + 1, 64, z + 3, Material.BOOK); // Reading material
+        }
+        if (random.nextBoolean()) {
+            setBlock(x + 4, 63, z + 2, Material.FLOWER_POT); // Small plant
+        }
     }
     
     private void buildMine(int x1, int x2, int z1, int z2, Material oreType, String mineName) {
@@ -213,17 +318,130 @@ public class PrisonStructureBuilder {
     }
     
     private void buildExerciseArea() {
-        // Exercise equipment area (20 to 35, y=62, z=20 to 35)
-        for (int x = 20; x <= 35; x++) {
-            for (int z = 20; z <= 35; z++) {
-                world.getBlockAt(x, 62, z).setType(Material.GRAY_CONCRETE);
+        // Exercise equipment area (18 to 33, y=62, z=18 to 33)
+        for (int x = 18; x <= 33; x++) {
+            for (int z = 18; z <= 33; z++) {
+                setBlock(x, 62, z, Material.GRAY_CONCRETE);
             }
         }
         
-        // Exercise equipment (simple representations)
-        world.getBlockAt(22, 63, 22).setType(Material.ANVIL); // Weight
-        world.getBlockAt(25, 63, 25).setType(Material.IRON_BARS); // Pull-up bar
-        world.getBlockAt(28, 63, 28).setType(Material.HAY_BLOCK); // Punching bag
+        // Weight lifting area
+        setBlock(20, 63, 20, Material.ANVIL); // Weight bench
+        setBlock(20, 63, 21, Material.IRON_BLOCK); // Weights
+        setBlock(19, 63, 20, Material.IRON_BLOCK);
+        setBlock(21, 63, 20, Material.IRON_BLOCK);
+        
+        // Pull-up bars
+        for (int i = 0; i < 3; i++) {
+            setBlock(25 + i, 63, 25, Material.OAK_FENCE);
+            setBlock(25 + i, 66, 25, Material.IRON_BARS);
+            for (int y = 64; y <= 65; y++) {
+                setBlock(25 + i, y, 25, Material.IRON_BARS);
+            }
+        }
+        
+        // Punching bags
+        setBlock(30, 63, 22, Material.HAY_BLOCK);
+        setBlock(30, 64, 22, Material.HAY_BLOCK);
+        setBlock(30, 65, 22, Material.CHAIN);
+        
+        setBlock(32, 63, 24, Material.HAY_BLOCK);
+        setBlock(32, 64, 24, Material.HAY_BLOCK);
+        setBlock(32, 65, 24, Material.CHAIN);
+        
+        // Exercise mats
+        for (int x = 22; x <= 24; x++) {
+            for (int z = 28; z <= 30; z++) {
+                setBlock(x, 63, z, Material.BLUE_CARPET);
+            }
+        }
+        
+        // Equipment storage
+        setBlock(19, 63, 30, Material.CHEST);
+        setBlock(20, 63, 30, Material.BARREL);
+    }
+    
+    private void buildPicnicArea() {
+        // Picnic tables area (-20 to -5, y=62, z=-20 to -5)
+        for (int x = -20; x <= -5; x++) {
+            for (int z = -20; z <= -5; z++) {
+                setBlock(x, 62, z, Material.COARSE_DIRT);
+            }
+        }
+        
+        // Picnic tables
+        for (int x = -18; x <= -8; x += 5) {
+            for (int z = -18; z <= -8; z += 5) {
+                // Table
+                setBlock(x, 63, z, Material.OAK_PRESSURE_PLATE);
+                setBlock(x, 62, z, Material.OAK_FENCE);
+                
+                // Benches
+                setBlock(x - 1, 63, z, Material.OAK_STAIRS);
+                setBlock(x + 1, 63, z, Material.OAK_STAIRS);
+                setBlock(x, 63, z - 1, Material.OAK_STAIRS);
+                setBlock(x, 63, z + 1, Material.OAK_STAIRS);
+            }
+        }
+    }
+    
+    private void buildGardenArea() {
+        // Garden area (5 to 20, y=62, z=-20 to -5)
+        for (int x = 5; x <= 20; x++) {
+            for (int z = -20; z <= -5; z++) {
+                setBlock(x, 62, z, Material.FARMLAND);
+            }
+        }
+        
+        // Plant crops and flowers
+        for (int x = 6; x <= 19; x += 2) {
+            for (int z = -19; z <= -6; z += 2) {
+                if (random.nextBoolean()) {
+                    setBlock(x, 63, z, Material.WHEAT);
+                } else {
+                    setBlock(x, 63, z, Material.CARROTS);
+                }
+            }
+        }
+        
+        // Flower beds
+        for (int x = 7; x <= 18; x += 3) {
+            for (int z = -18; z <= -7; z += 3) {
+                setBlock(x, 63, z, Material.POPPY);
+            }
+        }
+        
+        // Water source
+        setBlock(12, 62, -12, Material.WATER);
+        
+        // Garden tools storage
+        setBlock(19, 63, -19, Material.CHEST);
+        setBlock(18, 63, -19, Material.COMPOSTER);
+    }
+    
+    private void buildWalkingPath() {
+        // Circular walking path around the yard
+        int centerX = 0, centerZ = 0;
+        int radius = 32;
+        
+        for (int angle = 0; angle < 360; angle += 5) {
+            double radians = Math.toRadians(angle);
+            int x = (int) (centerX + radius * Math.cos(radians));
+            int z = (int) (centerZ + radius * Math.sin(radians));
+            
+            setBlock(x, 62, z, Material.STONE_BRICK_SLAB);
+            setBlock(x + 1, 62, z, Material.STONE_BRICK_SLAB);
+            setBlock(x, 62, z + 1, Material.STONE_BRICK_SLAB);
+        }
+        
+        // Benches along the path
+        for (int angle = 0; angle < 360; angle += 45) {
+            double radians = Math.toRadians(angle);
+            int x = (int) (centerX + (radius - 3) * Math.cos(radians));
+            int z = (int) (centerZ + (radius - 3) * Math.sin(radians));
+            
+            setBlock(x, 63, z, Material.OAK_STAIRS);
+        }
     }
     
     private void buildEntrance() {
@@ -342,5 +560,278 @@ public class PrisonStructureBuilder {
         
         // Process any remaining block changes
         processBlockChanges();
+    }
+    
+    public void buildCafeteria() {
+        // Cafeteria building (-50 to -10, y=62-70, z=50 to 90)
+        buildRectangle(-50, 62, 50, -10, 70, 90, Material.QUARTZ_BLOCK, true);
+        
+        // Cafeteria floor
+        for (int x = -48; x < -12; x++) {
+            for (int z = 52; z < 88; z++) {
+                setBlock(x, 62, z, Material.POLISHED_ANDESITE);
+            }
+        }
+        
+        // Kitchen area (-48 to -35, z=52 to 65)
+        buildRectangle(-48, 62, 52, -35, 68, 65, Material.STONE_BRICKS, true);
+        
+        // Kitchen equipment
+        setBlock(-45, 63, 55, Material.FURNACE);
+        setBlock(-44, 63, 55, Material.FURNACE);
+        setBlock(-43, 63, 55, Material.FURNACE);
+        setBlock(-42, 63, 55, Material.SMOKER);
+        setBlock(-41, 63, 55, Material.BLAST_FURNACE);
+        
+        // Food storage
+        setBlock(-45, 63, 62, Material.CHEST);
+        setBlock(-44, 63, 62, Material.BARREL);
+        setBlock(-43, 63, 62, Material.BARREL);
+        
+        // Serving counter
+        for (int x = -34; x >= -40; x--) {
+            setBlock(x, 63, 68, Material.QUARTZ_SLAB);
+            setBlock(x, 62, 68, Material.QUARTZ_PILLAR);
+        }
+        
+        // Dining tables (4x4 arrangement)
+        for (int x = -30; x >= -45; x -= 8) {
+            for (int z = 75; z <= 85; z += 5) {
+                // Table
+                setBlock(x, 63, z, Material.OAK_PRESSURE_PLATE);
+                setBlock(x, 62, z, Material.OAK_FENCE);
+                
+                // Chairs around table
+                setBlock(x-1, 63, z, Material.OAK_STAIRS);
+                setBlock(x+1, 63, z, Material.OAK_STAIRS);
+                setBlock(x, 63, z-1, Material.OAK_STAIRS);
+                setBlock(x, 63, z+1, Material.OAK_STAIRS);
+            }
+        }
+        
+        // Cafeteria lighting
+        for (int x = -45; x <= -15; x += 10) {
+            for (int z = 60; z <= 80; z += 10) {
+                setBlock(x, 69, z, Material.GLOWSTONE);
+            }
+        }
+        
+        // Entrance
+        setBlock(-30, 63, 50, Material.OAK_DOOR);
+        setBlock(-30, 64, 50, Material.OAK_DOOR);
+    }
+    
+    public void buildLibrary() {
+        // Library building (10 to 50, y=62-70, z=50 to 90)
+        buildRectangle(10, 62, 50, 50, 70, 90, Material.OAK_PLANKS, true);
+        
+        // Library floor
+        for (int x = 12; x < 48; x++) {
+            for (int z = 52; z < 88; z++) {
+                setBlock(x, 62, z, Material.OAK_PLANKS);
+            }
+        }
+        
+        // Bookshelves along walls
+        for (int x = 13; x < 47; x += 2) {
+            setBlock(x, 63, 53, Material.BOOKSHELF);
+            setBlock(x, 64, 53, Material.BOOKSHELF);
+            setBlock(x, 63, 87, Material.BOOKSHELF);
+            setBlock(x, 64, 87, Material.BOOKSHELF);
+        }
+        
+        for (int z = 55; z < 85; z += 2) {
+            setBlock(13, 63, z, Material.BOOKSHELF);
+            setBlock(13, 64, z, Material.BOOKSHELF);
+            setBlock(47, 63, z, Material.BOOKSHELF);
+            setBlock(47, 64, z, Material.BOOKSHELF);
+        }
+        
+        // Reading tables
+        for (int x = 20; x <= 40; x += 10) {
+            for (int z = 60; z <= 80; z += 10) {
+                setBlock(x, 63, z, Material.OAK_PRESSURE_PLATE);
+                setBlock(x, 62, z, Material.OAK_FENCE);
+                
+                // Chairs
+                setBlock(x-1, 63, z, Material.OAK_STAIRS);
+                setBlock(x+1, 63, z, Material.OAK_STAIRS);
+                
+                // Books on table
+                if (random.nextBoolean()) {
+                    setBlock(x, 64, z, Material.BOOK);
+                }
+            }
+        }
+        
+        // Librarian desk
+        setBlock(30, 63, 55, Material.LECTERN);
+        setBlock(29, 63, 55, Material.OAK_STAIRS);
+        setBlock(31, 63, 55, Material.CHEST); // Book storage
+        
+        // Library lighting
+        for (int x = 20; x <= 40; x += 10) {
+            for (int z = 60; z <= 80; z += 10) {
+                setBlock(x, 68, z, Material.LANTERN);
+            }
+        }
+        
+        // Entrance
+        setBlock(30, 63, 50, Material.OAK_DOOR);
+        setBlock(30, 64, 50, Material.OAK_DOOR);
+    }
+    
+    public void buildWorkshop() {
+        // Workshop building (-90 to -50, y=62-70, z=-90 to -50)
+        buildRectangle(-90, 62, -90, -50, 70, -50, Material.COBBLESTONE, true);
+        
+        // Workshop floor
+        for (int x = -88; x < -52; x++) {
+            for (int z = -88; z < -52; z++) {
+                setBlock(x, 62, z, Material.STONE);
+            }
+        }
+        
+        // Crafting area
+        for (int x = -85; x <= -75; x += 5) {
+            for (int z = -85; z <= -75; z += 5) {
+                setBlock(x, 63, z, Material.CRAFTING_TABLE);
+                setBlock(x+1, 63, z, Material.OAK_STAIRS); // Work stool
+            }
+        }
+        
+        // Anvil area
+        setBlock(-60, 63, -80, Material.ANVIL);
+        setBlock(-59, 63, -80, Material.ANVIL);
+        setBlock(-58, 63, -80, Material.ANVIL);
+        
+        // Tool storage
+        setBlock(-55, 63, -85, Material.CHEST);
+        setBlock(-55, 63, -84, Material.BARREL);
+        setBlock(-55, 63, -83, Material.BARREL);
+        
+        // Furnace area
+        setBlock(-85, 63, -55, Material.FURNACE);
+        setBlock(-84, 63, -55, Material.BLAST_FURNACE);
+        setBlock(-83, 63, -55, Material.SMOKER);
+        
+        // Material storage
+        for (int x = -75; x <= -65; x += 2) {
+            setBlock(x, 63, -55, Material.CHEST);
+        }
+        
+        // Workshop lighting
+        for (int x = -80; x <= -60; x += 10) {
+            for (int z = -80; z <= -60; z += 10) {
+                setBlock(x, 68, z, Material.TORCH);
+            }
+        }
+        
+        // Entrance
+        setBlock(-70, 63, -50, Material.IRON_DOOR);
+        setBlock(-70, 64, -50, Material.IRON_DOOR);
+    }
+    
+    public void buildMedicalBlock() {
+        // Medical building (50 to 90, y=62-70, z=-90 to -50)
+        buildRectangle(50, 62, -90, 90, 70, -50, Material.WHITE_CONCRETE, true);
+        
+        // Medical floor
+        for (int x = 52; x < 88; x++) {
+            for (int z = -88; z < -52; z++) {
+                setBlock(x, 62, z, Material.WHITE_CONCRETE);
+            }
+        }
+        
+        // Reception area (52-65, z=-85 to -75)
+        setBlock(58, 63, -80, Material.LECTERN); // Reception desk
+        setBlock(57, 63, -80, Material.OAK_STAIRS); // Chair
+        
+        // Waiting area
+        for (int x = 55; x <= 62; x += 3) {
+            setBlock(x, 63, -75, Material.OAK_STAIRS);
+        }
+        
+        // Medical rooms
+        for (int x = 70; x <= 85; x += 8) {
+            for (int z = -85; z <= -60; z += 12) {
+                // Room walls
+                buildRectangle(x, 62, z, x+6, 68, z+10, Material.WHITE_CONCRETE, true);
+                
+                // Medical bed
+                setBlock(x+1, 63, z+2, Material.WHITE_BED);
+                
+                // Medical equipment
+                setBlock(x+4, 63, z+2, Material.BREWING_STAND);
+                setBlock(x+4, 63, z+4, Material.CAULDRON);
+                setBlock(x+1, 63, z+8, Material.CHEST); // Medical supplies
+                
+                // Room door
+                setBlock(x+3, 63, z, Material.OAK_DOOR);
+                setBlock(x+3, 64, z, Material.OAK_DOOR);
+            }
+        }
+        
+        // Medical lighting
+        for (int x = 60; x <= 80; x += 10) {
+            for (int z = -80; z <= -60; z += 10) {
+                setBlock(x, 68, z, Material.GLOWSTONE);
+            }
+        }
+        
+        // Main entrance
+        setBlock(70, 63, -50, Material.OAK_DOOR);
+        setBlock(70, 64, -50, Material.OAK_DOOR);
+    }
+    
+    public void buildSolitaryConfinement() {
+        // Solitary confinement building (-150 to -110, y=55-65, z=-50 to -10)
+        buildRectangle(-150, 55, -50, -110, 65, -10, Material.OBSIDIAN, true);
+        
+        // Solitary floor
+        for (int x = -148; x < -112; x++) {
+            for (int z = -48; z < -12; z++) {
+                setBlock(x, 55, z, Material.OBSIDIAN);
+            }
+        }
+        
+        // Individual solitary cells (3x3 each)
+        int cellSize = 4;
+        for (int x = -145; x <= -115; x += cellSize + 1) {
+            for (int z = -45; z <= -15; z += cellSize + 1) {
+                // Cell walls
+                buildRectangle(x, 55, z, x+cellSize, 62, z+cellSize, Material.OBSIDIAN, true);
+                
+                // Cell floor
+                for (int cx = x+1; cx < x+cellSize; cx++) {
+                    for (int cz = z+1; cz < z+cellSize; cz++) {
+                        setBlock(cx, 55, cz, Material.OBSIDIAN);
+                    }
+                }
+                
+                // Iron door
+                setBlock(x, 56, z+2, Material.IRON_DOOR);
+                setBlock(x, 57, z+2, Material.IRON_DOOR);
+                
+                // Minimal furnishing
+                setBlock(x+2, 56, z+2, Material.GRAY_BED);
+                setBlock(x+3, 56, z+3, Material.CAULDRON); // Toilet
+                
+                // Dim lighting
+                setBlock(x+2, 61, z+2, Material.REDSTONE_TORCH);
+            }
+        }
+        
+        // Guard corridor
+        for (int x = -148; x < -112; x++) {
+            setBlock(x, 55, -30, Material.STONE_BRICKS);
+        }
+        
+        // Security entrance
+        setBlock(-130, 56, -10, Material.IRON_DOOR);
+        setBlock(-130, 57, -10, Material.IRON_DOOR);
+        
+        // Warning signs
+        setBlock(-130, 58, -12, Material.OAK_SIGN);
     }
 }
