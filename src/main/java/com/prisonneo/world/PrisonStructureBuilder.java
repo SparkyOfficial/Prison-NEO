@@ -4,6 +4,7 @@ import com.prisonneo.PrisonNEO;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Bisected;
 import java.util.ArrayDeque;
 import java.util.Queue;
 import java.util.Random;
@@ -209,8 +210,18 @@ public class PrisonStructureBuilder {
         }
         
         // Cell door
-        setBlock(x, 63, z + 2, Material.IRON_DOOR);
-        setBlock(x, 64, z + 2, Material.IRON_DOOR);
+        // Cell door
+        Block doorBlock = world.getBlockAt(x, 63, z + 2);
+        doorBlock.setType(Material.IRON_DOOR);
+        Bisected doorData = (Bisected) doorBlock.getBlockData();
+        doorData.setHalf(Bisected.Half.BOTTOM);
+        doorBlock.setBlockData(doorData);
+
+        Block topDoorBlock = world.getBlockAt(x, 64, z + 2);
+        topDoorBlock.setType(Material.IRON_DOOR);
+        Bisected topDoorData = (Bisected) topDoorBlock.getBlockData();
+        topDoorData.setHalf(Bisected.Half.TOP);
+        topDoorBlock.setBlockData(topDoorData);
         
         // Cell floor
         for (int cx = x + 1; cx < x + size; cx++) {
@@ -232,7 +243,7 @@ public class PrisonStructureBuilder {
         
         // Toilet and sink
         setBlock(x + size - 2, 63, z + size - 2, Material.CAULDRON);
-        setBlock(x + size - 2, 64, z + size - 3, Material.ITEM_FRAME); // Mirror
+        setBlock(x + size - 2, 64, z + size - 3, Material.GLOW_ITEM_FRAME); // Mirror
         
         // Small table
         setBlock(x + 3, 63, z + 3, Material.OAK_PRESSURE_PLATE);
@@ -244,7 +255,7 @@ public class PrisonStructureBuilder {
         
         // Personal items
         if (random.nextBoolean()) {
-            setBlock(x + 1, 64, z + 3, Material.BOOK); // Reading material
+            setBlock(x + 1, 64, z + 3, Material.LECTERN); // Reading material
         }
         if (random.nextBoolean()) {
             setBlock(x + 4, 63, z + 2, Material.FLOWER_POT); // Small plant
@@ -447,8 +458,18 @@ public class PrisonStructureBuilder {
     private void buildEntrance() {
         // Main entrance gate (-5 to 5, y=62-67, z=-100)
         for (int x = -5; x <= 5; x++) {
-            for (int y = 62; y <= 67; y++) {
-                world.getBlockAt(x, y, -100).setType(Material.IRON_DOOR);
+            for (int y = 62; y <= 66; y += 2) {
+                Block bottomDoor = world.getBlockAt(x, y, -100);
+                bottomDoor.setType(Material.IRON_DOOR);
+                Bisected doorData = (Bisected) bottomDoor.getBlockData();
+                doorData.setHalf(Bisected.Half.BOTTOM);
+                bottomDoor.setBlockData(doorData);
+
+                Block topDoor = world.getBlockAt(x, y + 1, -100);
+                topDoor.setType(Material.IRON_DOOR);
+                Bisected topDoorData = (Bisected) topDoor.getBlockData();
+                topDoorData.setHalf(Bisected.Half.TOP);
+                topDoor.setBlockData(topDoorData);
             }
         }
         
@@ -659,7 +680,7 @@ public class PrisonStructureBuilder {
                 
                 // Books on table
                 if (random.nextBoolean()) {
-                    setBlock(x, 64, z, Material.BOOK);
+                    // Books on table
                 }
             }
         }

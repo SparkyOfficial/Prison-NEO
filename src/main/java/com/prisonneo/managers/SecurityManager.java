@@ -29,6 +29,9 @@ public class SecurityManager {
         this.securityCameras = new HashSet<>();
         this.metalDetectors = new HashSet<>();
         
+    }
+    
+    public void initialize() {
         setupSecurityDevices();
         startSecurityPatrols();
     }

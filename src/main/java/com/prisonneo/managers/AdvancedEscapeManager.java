@@ -31,6 +31,9 @@ public class AdvancedEscapeManager implements Listener {
         this.lastEscapeAttempt = new HashMap<>();
         this.toolLocations = new HashMap<>();
         
+    }
+    
+    public void initialize() {
         setupToolLocations();
         startRandomToolSpawns();
     }

@@ -122,6 +122,9 @@ public class WorldManager {
         prisonWorld = Bukkit.getWorld(WORLD_NAME);
         if (prisonWorld == null) {
             plugin.getLogger().info("Prison world not found. Use /prisonworld create to generate it.");
+        } else {
+            plugin.getLogger().info("Prison world found and loaded.");
+            initializeDependentManagers();
         }
     }
     
@@ -149,6 +152,9 @@ public class WorldManager {
                 prisonWorld.save();
                 plugin.getLogger().info("Prison structures generated successfully!");
                 
+                // Initialize managers that depend on the world
+                initializeDependentManagers();
+
                 // Teleport all online players to the prison world
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.teleport(new Location(prisonWorld, 0, 70, 0));
@@ -160,6 +166,13 @@ public class WorldManager {
         });
     }
     
+    private void initializeDependentManagers() {
+        plugin.getLogger().info("Initializing world-dependent managers...");
+        plugin.getAdvancedEscapeManager().initialize();
+        plugin.getSecurityManager().initialize();
+        plugin.getLogger().info("World-dependent managers initialized.");
+    }
+
     public World getPrisonWorld() {
         return prisonWorld;
     }
