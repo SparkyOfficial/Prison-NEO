@@ -19,6 +19,9 @@ public class CellManager {
         this.plugin = plugin;
         this.cells = new HashMap<>();
         this.playerCells = new HashMap<>();
+    }
+    
+    public void initialize() {
         generateCells();
     }
     

@@ -103,17 +103,14 @@ public class PrisonStructureBuilder {
         // Basketball court
         buildBasketballCourt();
         
-        // Build structures in sequence
-        buildMainPrison();
-        buildCellBlocks();
-        buildMines();
-        buildYard();
-        buildCafeteria();
-        buildLibrary();
-        buildWorkshop();
-        buildMedicalBlock();
-        buildSolitaryConfinement();
-        buildWalls();
+        // Exercise area
+        buildExerciseArea();
+        
+        // Picnic area
+        buildPicnicArea();
+        
+        // Garden area
+        buildGardenArea();
         
         // Walking path
         buildWalkingPath();
@@ -209,19 +206,9 @@ public class PrisonStructureBuilder {
             setBlock(x, y, z + 3, Material.IRON_BARS);
         }
         
-        // Cell door
-        // Cell door
-        Block doorBlock = world.getBlockAt(x, 63, z + 2);
-        doorBlock.setType(Material.IRON_DOOR);
-        Bisected doorData = (Bisected) doorBlock.getBlockData();
-        doorData.setHalf(Bisected.Half.BOTTOM);
-        doorBlock.setBlockData(doorData);
-
-        Block topDoorBlock = world.getBlockAt(x, 64, z + 2);
-        topDoorBlock.setType(Material.IRON_DOOR);
-        Bisected topDoorData = (Bisected) topDoorBlock.getBlockData();
-        topDoorData.setHalf(Bisected.Half.TOP);
-        topDoorBlock.setBlockData(topDoorData);
+        // Cell door - simplified approach
+        setBlock(x, 63, z + 2, Material.IRON_DOOR);
+        setBlock(x, 64, z + 2, Material.IRON_DOOR);
         
         // Cell floor
         for (int cx = x + 1; cx < x + size; cx++) {
@@ -459,17 +446,8 @@ public class PrisonStructureBuilder {
         // Main entrance gate (-5 to 5, y=62-67, z=-100)
         for (int x = -5; x <= 5; x++) {
             for (int y = 62; y <= 66; y += 2) {
-                Block bottomDoor = world.getBlockAt(x, y, -100);
-                bottomDoor.setType(Material.IRON_DOOR);
-                Bisected doorData = (Bisected) bottomDoor.getBlockData();
-                doorData.setHalf(Bisected.Half.BOTTOM);
-                bottomDoor.setBlockData(doorData);
-
-                Block topDoor = world.getBlockAt(x, y + 1, -100);
-                topDoor.setType(Material.IRON_DOOR);
-                Bisected topDoorData = (Bisected) topDoor.getBlockData();
-                topDoorData.setHalf(Bisected.Half.TOP);
-                topDoor.setBlockData(topDoorData);
+                setBlock(x, y, -100, Material.IRON_DOOR);
+                setBlock(x, y + 1, -100, Material.IRON_DOOR);
             }
         }
         

@@ -170,6 +170,7 @@ public class WorldManager {
         plugin.getLogger().info("Initializing world-dependent managers...");
         plugin.getAdvancedEscapeManager().initialize();
         plugin.getSecurityManager().initialize();
+        plugin.getCellManager().initialize();
         plugin.getLogger().info("World-dependent managers initialized.");
     }
 
