@@ -48,25 +48,33 @@ public class PrisonWorldCommand implements CommandExecutor {
     private void handleCreate(CommandSender sender) {
         sender.sendMessage(ChatColor.YELLOW + "Creating prison world... This may take a moment.");
         
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            plugin.getWorldManager().createPrisonWorld();
-            
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
+        // Run world creation on the main thread
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            try {
+                plugin.getWorldManager().createPrisonWorld();
                 sender.sendMessage(ChatColor.GREEN + "Prison world created successfully!");
                 sender.sendMessage(ChatColor.AQUA + "Use /prisonworld tp to teleport to the prison.");
-            });
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "Failed to create prison world. Check console for errors.");
+                plugin.getLogger().severe("Error creating prison world: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
     }
     
     private void handleReset(CommandSender sender) {
         sender.sendMessage(ChatColor.YELLOW + "Resetting prison world... This may take a moment.");
         
-        plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-            plugin.getWorldManager().resetPrisonWorld();
-            
-            plugin.getServer().getScheduler().runTask(plugin, () -> {
+        // Run world reset on the main thread
+        plugin.getServer().getScheduler().runTask(plugin, () -> {
+            try {
+                plugin.getWorldManager().resetPrisonWorld();
                 sender.sendMessage(ChatColor.GREEN + "Prison world reset successfully!");
-            });
+            } catch (Exception e) {
+                sender.sendMessage(ChatColor.RED + "Failed to reset prison world. Check console for errors.");
+                plugin.getLogger().severe("Error resetting prison world: " + e.getMessage());
+                e.printStackTrace();
+            }
         });
     }
     

@@ -20,62 +20,81 @@ public class WorldManager {
         loadPrisonWorld();
     }
     
-    public void createPrisonWorld() {
+    public boolean createPrisonWorld() {
         // Delete existing world if it exists
         if (prisonWorld != null) {
             resetPrisonWorld();
         }
         
-        // Create world with custom generator
-        WorldCreator creator = new WorldCreator(WORLD_NAME);
-        creator.generator(new WorldGenerator(plugin));
-        creator.environment(World.Environment.NORMAL);
-        creator.type(WorldType.FLAT);
-        
-        prisonWorld = creator.createWorld();
-        
-        if (prisonWorld != null) {
-            // Set world properties
-            prisonWorld.setDifficulty(Difficulty.NORMAL);
-            prisonWorld.setSpawnFlags(false, false); // No monsters, no animals
-            prisonWorld.setPVP(false);
-            prisonWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
-            prisonWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
-            prisonWorld.setGameRule(GameRule.KEEP_INVENTORY, true);
-            prisonWorld.setTime(6000); // Noon
+        try {
+            // Create world with custom generator
+            WorldCreator creator = new WorldCreator(WORLD_NAME);
+            creator.generator(new WorldGenerator(plugin));
+            creator.environment(World.Environment.NORMAL);
+            creator.type(WorldType.FLAT);
             
-            // Set spawn location
-            Location spawn = new Location(prisonWorld, 0, 61, 0);
-            prisonWorld.setSpawnLocation(spawn);
+            // Create world on main thread
+            prisonWorld = creator.createWorld();
             
-            // Generate prison structures
-            generatePrisonStructures();
-            
-            // Schedule NPC initialization after world generation
-            Bukkit.getScheduler().runTaskLater(plugin, () -> {
-                NPCSpawner npcSpawner = new NPCSpawner(plugin, prisonWorld);
-                npcSpawner.spawnAllNPCs();
-                plugin.getLogger().info("NPCs spawned for prison world!");
-            }, 200L); // 10 second delay
+            if (prisonWorld != null) {
+                // Set world properties
+                prisonWorld.setDifficulty(Difficulty.NORMAL);
+                prisonWorld.setSpawnFlags(false, false); // No monsters, no animals
+                prisonWorld.setPVP(false);
+                prisonWorld.setGameRule(GameRule.DO_DAYLIGHT_CYCLE, false);
+                prisonWorld.setGameRule(GameRule.DO_WEATHER_CYCLE, false);
+                prisonWorld.setGameRule(GameRule.KEEP_INVENTORY, true);
+                prisonWorld.setTime(6000); // Noon
+                
+                // Set spawn location
+                Location spawn = new Location(prisonWorld, 0, 61, 0);
+                prisonWorld.setSpawnLocation(spawn);
+                
+                // Generate prison structures
+                generatePrisonStructures();
+                
+                // Schedule NPC initialization after world generation
+                Bukkit.getScheduler().runTaskLater(plugin, () -> {
+                    NPCSpawner npcSpawner = new NPCSpawner(plugin, prisonWorld);
+                    npcSpawner.spawnAllNPCs();
+                    plugin.getLogger().info("NPCs spawned for prison world!");
+                }, 200L); // 10 second delay
+                
+                return true;
+            }
+            return false;
+        } catch (Exception e) {
+            plugin.getLogger().severe("Failed to create prison world: " + e.getMessage());
+            e.printStackTrace();
+            return false;
         }
     }
     
     public void resetPrisonWorld() {
-        if (prisonWorld != null) {
-            // Teleport all players out
-            for (Player player : prisonWorld.getPlayers()) {
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+        try {
+            if (prisonWorld != null) {
+                // Teleport all players out
+                for (Player player : prisonWorld.getPlayers()) {
+                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                }
+                
+                // Unload world
+                if (!Bukkit.unloadWorld(prisonWorld, false)) {
+                    plugin.getLogger().warning("Failed to unload prison world!");
+                    return;
+                }
+                prisonWorld = null;
             }
             
-            // Unload world
-            Bukkit.unloadWorld(prisonWorld, false);
+            // Delete world folder
+            deleteWorldFolder();
+            
+            // Create new world
+            createPrisonWorld();
+        } catch (Exception e) {
+            plugin.getLogger().severe("Error resetting prison world: " + e.getMessage());
+            e.printStackTrace();
         }
-        
-        // Delete world folder
-        deleteWorldFolder();
-        
-        // Create new world
-        createPrisonWorld();
     }
     
     private void deleteWorldFolder() {
