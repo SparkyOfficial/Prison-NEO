@@ -55,6 +55,17 @@ commands:
     permission: prison.schedule
     aliases: [расписание, time]
   
+  doctor:
+    description: Medical services for prisoners.
+    usage: /doctor
+    permission: prison.doctor
+    aliases: [doc, medic]
+
+  testschedule:
+    description: Manually trigger a schedule event for testing.
+    usage: /testschedule <event>
+    permission: prison.admin
+  
   prisonworld:
     description: Prison world management
     usage: /<command> create|reset|tp
