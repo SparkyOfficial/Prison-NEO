@@ -58,6 +58,7 @@ public class GangCommand implements CommandExecutor {
         player.sendMessage("§eНазвание: " + gang.getDisplayName());
         player.sendMessage("§eУчастников: §f" + gang.getMembers().size());
         player.sendMessage("§eТерритория: §f" + gang.getTerritoryInfo());
+        player.sendMessage("§eЛидер: §f" + (gang.getLeader() != null ? gang.getLeader() : "Нет"));
     }
     
     private void sendHelp(Player player) {

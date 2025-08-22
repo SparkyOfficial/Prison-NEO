@@ -88,8 +88,12 @@ commands:
     permission: prison.mine
   
   gang:
-    description: Gang system
-    usage: /<command> [subcommand]
+    description: Управление бандами
+    usage: /gang [menu|info|leave]
+  
+  money:
+    description: Управление валютой
+    usage: /money [balance|pay|top]
     permission: prison.gang
     aliases: [g]
   

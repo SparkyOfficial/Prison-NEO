@@ -3,6 +3,8 @@ package com.prisonneo;
 import com.prisonneo.commands.*;
 import com.prisonneo.listeners.*;
 import com.prisonneo.managers.*;
+import com.prisonneo.economy.PrisonCurrency;
+import com.prisonneo.events.RandomEventManager;
 import com.prisonneo.ui.UIManager;
 import com.prisonneo.world.WorldGenerator;
 import com.prisonneo.world.NPCSpawner;
@@ -36,6 +38,8 @@ public final class PrisonNEO extends JavaPlugin {
     private VisitorManager visitorManager;
     private MailManager mailManager;
     private com.prisonneo.managers.SecurityManager securityManager;
+    private PrisonCurrency prisonCurrency;
+    private RandomEventManager randomEventManager;
     private PunishmentManager punishmentManager;
     private ScheduleManager scheduleManager;
     private AchievementManager achievementManager;
@@ -70,6 +74,9 @@ public final class PrisonNEO extends JavaPlugin {
         }
         if (playerManager != null) {
             playerManager.saveData();
+        }
+        if (prisonCurrency != null) {
+            prisonCurrency.saveData();
         }
         getLogger().info("Prison NEO has been disabled!");
     }
@@ -106,6 +113,8 @@ public final class PrisonNEO extends JavaPlugin {
         workshopManager = new WorkshopManager(this);
         libraryManager = new LibraryManager(this);
         uiManager = new UIManager(this);
+        prisonCurrency = new PrisonCurrency(this);
+        randomEventManager = new RandomEventManager(this);
     }
 
     private void registerCommands() {
@@ -116,6 +125,7 @@ public final class PrisonNEO extends JavaPlugin {
         getCommand("mine").setExecutor(new MineCommand(this));
         getCommand("gang").setExecutor(new GangCommand(this));
         getCommand("contraband").setExecutor(new ContrabandCommand(this));
+        getCommand("money").setExecutor(new MoneyCommand(this));
         getCommand("job").setExecutor(new JobCommand(this));
         getCommand("minigame").setExecutor(new MinigameCommand(this));
         getCommand("loan").setExecutor(new LoanCommand(this));
@@ -177,6 +187,7 @@ public final class PrisonNEO extends JavaPlugin {
     public VisitorManager getVisitorManager() { return visitorManager; }
     public MailManager getMailManager() { return mailManager; }
     public com.prisonneo.managers.SecurityManager getSecurityManager() { return securityManager; }
+    public PrisonCurrency getPrisonCurrency() { return prisonCurrency; }
     public PunishmentManager getPunishmentManager() { return punishmentManager; }
     public ScheduleManager getScheduleManager() { return scheduleManager; }
     public AchievementManager getAchievementManager() { return achievementManager; }

@@ -1,6 +1,7 @@
 package com.prisonneo.managers;
 
 import com.prisonneo.PrisonNEO;
+import com.prisonneo.gangs.Gang;
 import com.prisonneo.data.PrisonPlayer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -21,13 +23,19 @@ public class GangManager implements Listener {
     private final PrisonNEO plugin;
     private final Map<String, Gang> gangs;
     private final Map<UUID, String> playerGangs;
+    private final Map<UUID, Long> lastTerritoryWarning;
     
     public GangManager(PrisonNEO plugin) {
         this.plugin = plugin;
         this.gangs = new HashMap<>();
         this.playerGangs = new HashMap<>();
-        setupDefaultGangs();
+        this.lastTerritoryWarning = new HashMap<>();
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
+    }
+    
+    public void initialize() {
+        setupDefaultGangs();
+        startGangEvents();
     }
     
     private void setupDefaultGangs() {
@@ -54,6 +62,100 @@ public class GangManager implements Listener {
                                new Location(plugin.getWorldManager().getPrisonWorld(), 60, 62, 60));
         rookies.setTerritory(40, 80, 40, 80);
         gangs.put("rookies", rookies);
+        
+        plugin.getLogger().info("Созданы банды: " + gangs.size());
+    }
+    
+    private void startGangEvents() {
+        // Запуск случайных событий банд каждые 5 минут
+        Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            triggerRandomGangEvent();
+        }, 6000L, 6000L); // 5 минут
+    }
+    
+    private void triggerRandomGangEvent() {
+        Random random = new Random();
+        int eventType = random.nextInt(4);
+        
+        switch (eventType) {
+            case 0:
+                triggerTerritoryConflict();
+                break;
+            case 1:
+                triggerGangMeeting();
+                break;
+            case 2:
+                triggerReputationEvent();
+                break;
+            case 3:
+                triggerTradeEvent();
+                break;
+        }
+    }
+    
+    private void triggerTerritoryConflict() {
+        List<Gang> gangList = new ArrayList<>(gangs.values());
+        if (gangList.size() < 2) return;
+        
+        Gang gang1 = gangList.get(new Random().nextInt(gangList.size()));
+        Gang gang2 = gangList.get(new Random().nextInt(gangList.size()));
+        
+        if (gang1.equals(gang2)) return;
+        
+        // Уведомить участников
+        broadcastToGang(gang1, "§c⚔ Конфликт с бандой " + gang2.getDisplayName() + "!");
+        broadcastToGang(gang2, "§c⚔ Конфликт с бандой " + gang1.getDisplayName() + "!");
+    }
+    
+    private void triggerGangMeeting() {
+        for (Gang gang : gangs.values()) {
+            if (gang.getMembers().size() > 0) {
+                broadcastToGang(gang, "§e📢 Собрание банды! Встречаемся на территории.");
+            }
+        }
+    }
+    
+    private void triggerReputationEvent() {
+        Gang randomGang = gangs.values().stream()
+            .skip(new Random().nextInt(gangs.size()))
+            .findFirst().orElse(null);
+        
+        if (randomGang != null) {
+            broadcastToGang(randomGang, "§a✨ Репутация банды выросла!");
+        }
+    }
+    
+    private void triggerTradeEvent() {
+        broadcastToAllGangs("§6💰 На черном рынке появились новые товары!");
+    }
+    
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        Location to = event.getTo();
+        
+        if (to == null) return;
+        
+        String playerGangId = playerGangs.get(player.getUniqueId());
+        Gang playerGang = playerGangId != null ? gangs.get(playerGangId) : null;
+        
+        // Проверка территории
+        for (Gang gang : gangs.values()) {
+            if (gang.isInTerritory(to)) {
+                if (playerGang == null || !gang.equals(playerGang)) {
+                    // Игрок на чужой территории
+                    long lastWarning = lastTerritoryWarning.getOrDefault(player.getUniqueId(), 0L);
+                    if (System.currentTimeMillis() - lastWarning > 30000) { // 30 секунд
+                        player.sendMessage("§c⚠ Вы на территории банды " + gang.getDisplayName() + "!");
+                        lastTerritoryWarning.put(player.getUniqueId(), System.currentTimeMillis());
+                    }
+                } else {
+                    // Своя территория
+                    player.sendActionBar("§aВаша территория: " + gang.getDisplayName());
+                }
+                break;
+            }
+        }
     }
     
     public void openGangMenu(Player player) {
@@ -75,12 +177,13 @@ public class GangManager implements Listener {
             inv.setItem(slot++, gangItem);
         }
         
-        // Current gang info
-        String currentGang = playerGangs.get(player.getUniqueId());
-        if (currentGang != null) {
+        // Информация о текущей банде
+        String currentGangId = playerGangs.get(player.getUniqueId());
+        if (currentGangId != null) {
+            Gang currentGang = gangs.get(currentGangId);
             ItemStack currentInfo = new ItemStack(Material.EMERALD);
             ItemMeta meta = currentInfo.getItemMeta();
-            meta.setDisplayName("§aВаша банда: " + gangs.get(currentGang).getDisplayName());
+            meta.setDisplayName("§aВаша банда: " + currentGang.getDisplayName());
             meta.setLore(Arrays.asList("§eНажмите, чтобы покинуть банду"));
             currentInfo.setItemMeta(meta);
             inv.setItem(49, currentInfo);
@@ -121,8 +224,8 @@ public class GangManager implements Listener {
         Gang gang = gangs.get(gangId);
         if (gang == null) return;
         
-        String currentGang = playerGangs.get(player.getUniqueId());
-        if (currentGang != null) {
+        String currentGangId = playerGangs.get(player.getUniqueId());
+        if (currentGangId != null) {
             player.sendMessage("§cВы уже состоите в банде! Сначала покиньте текущую.");
             return;
         }
@@ -163,17 +266,20 @@ public class GangManager implements Listener {
         }
     }
     
-    public boolean isInGangTerritory(Player player, Location location) {
-        String gangId = playerGangs.get(player.getUniqueId());
-        if (gangId == null) return false;
-        
-        Gang gang = gangs.get(gangId);
-        return gang != null && gang.isInTerritory(location);
+    // Utility methods
+    private void broadcastToGang(Gang gang, String message) {
+        for (UUID memberUuid : gang.getMembers()) {
+            Player member = Bukkit.getPlayer(memberUuid);
+            if (member != null) {
+                member.sendMessage(gang.getPrefix() + " " + message);
+            }
+        }
     }
     
-    public Gang getPlayerGang(Player player) {
-        String gangId = playerGangs.get(player.getUniqueId());
-        return gangId != null ? gangs.get(gangId) : null;
+    private void broadcastToAllGangs(String message) {
+        for (Gang gang : gangs.values()) {
+            broadcastToGang(gang, message);
+        }
     }
     
     private String findGangByDisplayName(String displayName) {
@@ -183,6 +289,24 @@ public class GangManager implements Listener {
             }
         }
         return null;
+    }
+    
+    // Public getters
+    public Gang getPlayerGang(Player player) {
+        String gangId = playerGangs.get(player.getUniqueId());
+        return gangId != null ? gangs.get(gangId) : null;
+    }
+    
+    public Collection<Gang> getAllGangs() {
+        return gangs.values();
+    }
+    
+    public boolean isInGangTerritory(Player player, Location location) {
+        String gangId = playerGangs.get(player.getUniqueId());
+        if (gangId == null) return false;
+        
+        Gang gang = gangs.get(gangId);
+        return gang != null && gang.isInTerritory(location);
     }
     
     public static class Gang {

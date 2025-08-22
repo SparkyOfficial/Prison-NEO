@@ -171,6 +171,7 @@ public class WorldManager {
         plugin.getAdvancedEscapeManager().initialize();
         plugin.getSecurityManager().initialize();
         plugin.getCellManager().initialize();
+        plugin.getGangManager().initialize();
         plugin.getLogger().info("World-dependent managers initialized.");
     }
 
